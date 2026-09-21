@@ -381,26 +381,27 @@ the Microsoft Agent 365 SDK, as described in the Agent 365 development lifecycle
    report or a pull request - and not in a private message either. The field names and the empty
    forms are the finding; the values are not.
 3. **Confirm what your platform emits for "no MCP servers"**, because the query's predicate depends
-   on it: `AgentsInfo | summarize Rows = count() by McpServersRaw = tostring(McpServers) | order by
-   Rows desc | take 20`. **The alias is `Rows` and not `Agents` because this step does not collapse
-   to one row per agent**, and it is not meant to: a form that appeared in an older snapshot is a
-   form the predicate has to allow for, which is the opposite of what the `arg_max` collapse in this
-   file's primary query is for. Read the figure as snapshot rows, on the same rule the note under
-   that query states. If a form appears that is not `""`, `[]`, `{}` or `null`, add it to the
-   predicate. **This non-collapsing shape is the one the empty-forms enumeration takes wherever this
-   pack runs it**, on the reason just given; MSD-004 verification step 2 and checklist Group 3 print
-   that shape at their own steps, over their own columns.
-   **The ordering is a convenience rather than the answer.** `order by ... desc` with a `take`
-   surfaces the common forms, and an unanticipated fifth form is by construction a rare one, so the
-   truncation hides exactly the case this step exists to find. **Run this as well:**
-   `AgentsInfo | summarize Rows = count() by McpServersRaw = tostring(McpServers) | where
-   McpServersRaw !in~ ("", "[]", "{}", "null") | order by Rows asc | take 20`. It drops the four
-   forms you already account for and brings the rarest of what is left to the top. **That is a
-   candidate filter and not a definition of emptiness**: some of what it returns will be genuinely
-   populated values rather than a fifth empty form, and telling those apart is the reading this step
-   asks of you. **This groups by the whole value string, so it renders populated entries on your own
-   screen.** That is unavoidable in your own portal and it changes nothing about what leaves it: read
-   the empty forms out of the output and leave everything else there.
+   on it: `AgentsInfo | where Timestamp > ago(30d) | summarize Rows = count() by McpServersRaw =
+   tostring(McpServers) | order by Rows desc | take 20`. **The alias is `Rows` and not `Agents`
+   because this step does not collapse to one row per agent**, and it is not meant to: a form that
+   appeared in an older snapshot is a form the predicate has to allow for, which is the opposite of
+   what the `arg_max` collapse in this file's primary query is for. Read the figure as snapshot
+   rows, on the same rule the note under that query states. If a form appears that is not `""`,
+   `[]`, `{}` or `null`, add it to the predicate. **This non-collapsing shape is the one the
+   empty-forms enumeration takes wherever this pack runs it**, on the reason just given; MSD-004
+   verification step 2 and checklist Group 3 print that shape at their own steps, over their own
+   columns. **The ordering is a convenience rather than the answer.** `order by ... desc` with a
+   `take` surfaces the common forms, and an unanticipated fifth form is by construction a rare one,
+   so the truncation hides exactly the case this step exists to find. **Run this as well:**
+   `AgentsInfo | where Timestamp > ago(30d) | summarize Rows = count() by McpServersRaw =
+   tostring(McpServers) | where McpServersRaw !in~ ("", "[]", "{}", "null") | order by Rows asc |
+   take 20`. It drops the four forms you already account for and brings the rarest of what is left
+   to the top. **That is a candidate filter and not a definition of emptiness**: some of what it
+   returns will be genuinely populated values rather than a fifth empty form, and telling those
+   apart is the reading this step asks of you. **This groups by the whole value string, so it
+   renders populated entries on your own screen.** That is unavoidable in your own portal and it
+   changes nothing about what leaves it: read the empty forms out of the output and leave everything
+   else there.
 4. Confirm the `LifecycleStatus` and `PublishedStatus` values your workspace emits match the
    documented sets (`Active`/`Blocked`/`Uninstalled`/`Deleted` and `Draft`/`Published`), and record
    the `Availability` values, which Learn does not publish. Learn's description covers a

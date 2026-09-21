@@ -380,7 +380,7 @@ not a more accurate one.
    uses the same table.
 2. **Enumerate what your platforms actually emit for an empty column**, because every predicate here
    depends on it:
-   `AgentsInfo | summarize Rows = count() by
+   `AgentsInfo | where Timestamp > ago(30d) | summarize Rows = count() by
    Platform, GuardrailsRaw = tostring(Guardrails) | order by Rows desc | take 30`. If a form
    appears that is not `""`, `[]`, `{}` or `null`, add it to the `EmptyForms` list in every query.
    Repeat for `DeclaredTools`, `Endpoints` and `McpServers`.
@@ -394,13 +394,13 @@ not a more accurate one.
    **The ordering is a convenience rather than the answer.** `order by ... desc` with a `take`
    surfaces the common forms, and an unanticipated fifth form is by construction a rare one, so the
    truncation hides exactly the case this step exists to find. **Run this as well:**
-   `AgentsInfo | summarize Rows = count() by GuardrailsRaw = tostring(Guardrails) | where
-   GuardrailsRaw !in~ ("", "[]", "{}", "null") | order by Rows asc | take 20`. It drops the four
-   forms you already account for and brings the rarest of what is left to the top. **It also groups
-   by the value alone rather than by platform and value**, so its `Rows` figures are across platforms
-   and are not comparable with the block above, where the same alias counts rows per platform and
-   value. A form several platforms emit shows as one row here, which is what keeps it inside
-   `take 20`. **That is a
+   `AgentsInfo | where Timestamp > ago(30d) | summarize Rows = count() by GuardrailsRaw =
+   tostring(Guardrails) | where GuardrailsRaw !in~ ("", "[]", "{}", "null") | order by Rows asc |
+   take 20`. It drops the four forms you already account for and brings the rarest of what is left
+   to the top. **It also groups by the value alone rather than by platform and value**, so its
+   `Rows` figures are across platforms and are not comparable with the block above, where the same
+   alias counts rows per platform and value. A form several platforms emit shows as one row here,
+   which is what keeps it inside `take 20`. **That is a
    candidate filter and not a definition of emptiness**: some of what it returns will be genuinely
    populated values rather than a fifth empty form, and telling those apart is the reading this step
    asks of you. **When you repeat it for `McpServers`,

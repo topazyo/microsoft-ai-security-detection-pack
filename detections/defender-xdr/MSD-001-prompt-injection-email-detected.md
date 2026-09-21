@@ -277,16 +277,20 @@ Run these before turning this into a custom detection rule. Full procedure in
      weaker than it was. It is still a reason, because a reading on which the terms match while
      separated would widen what the operator matches without saying so
    - a value with no word boundary around the match, such as `PromptInjectionProtection`:
-     **replace the literal with the form you observed**, then use `contains`, documented on the same
-     page as matching where the right-hand side "occurs as a subsequence of" the left. That page
-     gives the case verbatim: `"KustoExplorerQueryRun" has "Explorer"` "will return `false`" while
-     `"KustoExplorerQueryRun" contains "Explorer"` "will return `true`". **A form like
-     `Prompt_injection_protection` is not an example of this case**, because the same page defines a
-     term as a maximal sequence of alphanumeric characters and an underscore is not alphanumeric, so
-     that form does break on word boundaries. **The swap has a cost the same page names**: a query
-     that "uses a `contains` operator" will "revert to scanning the values in the column", and
-     "Scanning is much slower than looking up the term in the term index". Make the swap because the
-     stored value's shape requires it, not as a default
+     **replace the literal with the form you observed, and only then decide whether the operator has
+     to change**: where the observed form is itself a whole term, `has` matches it and no swap is
+     needed. **`contains` is the operator only where what you must match is a fragment inside a
+     longer alphanumeric run**, which replacing the literal cannot turn into a whole term; it is
+     documented on the same page as matching where the right-hand side "occurs as a subsequence of"
+     the left. That page gives the case verbatim: `"KustoExplorerQueryRun" has "Explorer"` "will
+     return `false`" while `"KustoExplorerQueryRun" contains "Explorer"` "will return `true`", where
+     `Explorer` is part of a longer run. **A form like `Prompt_injection_protection` is not an
+     example of this case**, because the same page defines a term as a maximal sequence of
+     alphanumeric characters and an underscore is not alphanumeric, so that form does break on word
+     boundaries. **The swap has a cost the same page names**: a query that "uses a `contains`
+     operator" will "revert to scanning the values in the column", and "Scanning is much slower than
+     looking up the term in the term index". Make the swap because the stored value's shape requires
+     it, not as a default
    - **more than one spelling in play, whatever the delimiter:** swapping `has` for `has_any` on the
      same single literal changes nothing, because the reference documents `has_any` as "Same as
      `has` but works on any of the elements". What it buys you is several spellings at once -

@@ -260,7 +260,7 @@ print H = hash_sha256("test")
       error rather than a row of values is a result as well**, and it is not one of the eight
       combinations the table is built from. **It does not on its own say which expression caused it**,
       because a compile error fails the whole statement, so isolate it in two steps rather than one.
-      First re-run
+- [ ] First re-run
       `print Control = ("Advanced filter, Prompt injection protection" has "injection")` by itself.
       That re-run drops five of the six columns and two of the three left-hand strings as well as the
       multi-term right-hand side, so read it as the check that the machinery and the literal are
@@ -290,7 +290,7 @@ print H = hash_sha256("test")
       then `print Scramble = ("protection injection Prompt" has "Prompt injection protection")`,
       then `print ControlScr = ("protection injection Prompt" has "injection")`.
       **Whichever of the four errors is the expression the engine rejected**: record the error text.
-      Read the controls before the readings, on the rule stated above: a false `Control`,
+- [ ] Read the controls before the readings, on the rule stated above: a false `Control`,
       `ControlNeg` or `ControlScr` means that left-hand string is not tokenising as this test
       assumes, and no reading resting on it can be read. **A false `MultiTerm` puts you in row 1
       only where `Control` is true and `Scramble` is false**; a false `MultiTerm` with a true
@@ -480,8 +480,8 @@ amount of further page reading settles any of this; only the test does.
 > portal and it changes nothing about what leaves it: read the empty forms out of that output and
 > leave everything else there. MSD-004 verification step 2 states the same rule for the same query.
 - [ ] **Enumerate what your platforms emit for an empty column**, which is what every `AgentsInfo`
-      predicate depends on: `AgentsInfo | summarize Rows = count() by Platform, GuardrailsRaw =
-      tostring(Guardrails) | order by Rows desc
+      predicate depends on: `AgentsInfo | where Timestamp > ago(30d) | summarize Rows = count() by
+      Platform, GuardrailsRaw = tostring(Guardrails) | order by Rows desc
       | take 30`. Repeat for `DeclaredTools`, `Endpoints` and `McpServers` - `Endpoints` because
       MSD-004's posture rollup counts agents by whether it is empty, and `McpServers` under the rule
       in the note above. **If a form appears that is not `""`, `[]`, `{}` or `null`, add it to the
@@ -503,13 +503,13 @@ amount of further page reading settles any of this; only the test does.
       **The ordering is a convenience rather than the answer.** `order by ... desc` with a `take`
       surfaces the common forms, and an unanticipated fifth form is by construction a rare one, so the
       truncation hides exactly the case this step exists to find. **Run this as well:**
-      `AgentsInfo | summarize Rows = count() by GuardrailsRaw = tostring(Guardrails) | where
-      GuardrailsRaw !in~ ("", "[]", "{}", "null") | order by Rows asc | take 20`. It drops the four
-      forms you already account for and brings the rarest of what is left to the top. **It also
-      groups by the value alone rather than by platform and value**, so its `Rows` figures are across
-      platforms and are not comparable with the block above, where the same alias counts rows per
-      platform and value. A form several platforms emit shows as one row here, which is what keeps it
-      inside `take 20`. **That is a
+      `AgentsInfo | where Timestamp > ago(30d) | summarize Rows = count() by GuardrailsRaw =
+      tostring(Guardrails) | where GuardrailsRaw !in~ ("", "[]", "{}", "null") | order by Rows asc |
+      take 20`. It drops the four forms you already account for and brings the rarest of what is
+      left to the top. **It also groups by the value alone rather than by platform and value**, so
+      its `Rows` figures are across platforms and are not comparable with the block above, where the
+      same alias counts rows per platform and value. A form several platforms emit shows as one row
+      here, which is what keeps it inside `take 20`. **That is a
       candidate filter and not a definition of emptiness**: some of what it returns will be genuinely
       populated values rather than a fifth empty form, and telling those apart is the reading this
       step asks of you. For `McpServers` the note above governs what you do with the contents.
