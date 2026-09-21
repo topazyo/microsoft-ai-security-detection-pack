@@ -254,9 +254,14 @@ content.
   attestation draws. **The value string travels only where the column carries a closed set the
   platform defines. Where a column carries free text, the value is itself estate data and this
   class does not reach it**, because there is no value name to send that is not also the content.
-  The checklist states that rule in full and names the free-text columns this pack touches; among
-  them are `EmailEvents.Subject`, `BehaviorInfo.Title`, `BehaviorInfo.Description`,
-  `CopilotActivity.LLMEventData`, `AADServicePrincipalSignInLogs.Agent` and `AgentsInfo.McpServers`.
+  The checklist states that rule in full and names the free-text columns this pack touches. **That
+  list and this one name the same columns**, which they have to: `EmailEvents.Subject`,
+  `BehaviorInfo.Title`, `BehaviorInfo.Description`, the `SampleLabels` rollup built from whichever
+  of those two a tenant carries, `CopilotActivity.LLMEventData`,
+  `AADServicePrincipalSignInLogs.Agent`, `AgentsInfo.McpServers`, `AgentsInfo.AgentName` and
+  `CopilotActivity.AgentName`. **The two agent-name columns are different columns that share a
+  name**, returned by MSD-003 and MSD-004 on the one hand and by MSD-007 on the other, and the test
+  above reaches the same answer for both because Microsoft publishes no value set for either.
   **`AgentsInfo.McpServers` is barred outright rather than routed**: Microsoft describes it as
   holding "server URLs and credential configuration", and MSD-003 says never to paste its contents
   anywhere. **A custom analytics-rule name your own workspace emits is your estate's naming**, so

@@ -39,6 +39,13 @@ Work through this in order. Record the date, the workspace type (lab or producti
 outcome of every step. **A step that cannot be completed is recorded as not completed** - never as
 passed with a note.
 
+**How the quoted notes below are placed, because the indentation carries meaning.** A note at the
+**left margin** states a rule for the group it sits in or for the whole checklist, and applies
+whether or not you ran the step above it. A note **indented to sit under a step** belongs to that
+step alone; every one of those opens `Correction,` with a date and records that an earlier version
+of the step said something this pack has since corrected. **The two are different things rather
+than two house styles**, so read the indentation before deciding what a note governs.
+
 ---
 
 ## Group 0 - Before you start
@@ -1025,7 +1032,11 @@ estate data and the default does not reach it**, because there is no value name 
 also the content. The free-text columns this pack touches include `BehaviorInfo.Description`,
 `BehaviorInfo.Title` where a tenant carries it, the `SampleLabels` rollup built from whichever of
 those two that tenant has, `CopilotActivity.LLMEventData`, `AgentsInfo.McpServers`,
-`EmailEvents.Subject` and `AADServicePrincipalSignInLogs.Agent`. **`Title` is on this list because
+`EmailEvents.Subject`, `AADServicePrincipalSignInLogs.Agent`, `AgentsInfo.AgentName` and
+`CopilotActivity.AgentName`. **The two agent-name columns are listed separately because they are
+different columns that share a name**: MSD-003 and MSD-004 return the one in `AgentsInfo`, MSD-007
+returns the one in `CopilotActivity`, and all three reach the same classification by the test above,
+Microsoft publishing no value set for either. **`Title` is on this list because
 MSD-008's step 1 names it behind `column_ifexists()`**, so an operator whose tenant carries the
 column gets that free text in `SampleLabels` rather than nothing. **For those, what travels is the column name and the shape you
 found, never the contents.** Having no documented value set is what puts a column into the routing

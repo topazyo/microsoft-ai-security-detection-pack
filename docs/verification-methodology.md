@@ -250,7 +250,13 @@ rows do that, which is why the row count and any element count differ.
 counted on a different unit again and will not add up to the row count above. A header count is the
 number of distinct **elements** that file marks Provisional - one per column, value set or
 serialisation - not the number of blockquotes carrying them. MSD-006's two serialisation columns
-share one blockquote and count as two. An element the file names as unestablished without applying
+share one blockquote and count as two. **The converse case occurs too, and it is MSD-008's: where a
+single undocumented value set spans several columns, it counts once rather than once per column.**
+That file's first Provisional names `ActionType`, `ServiceSource` and `DetectionSource` together,
+because what is undocumented is one value set rather than three, so its header reads two elements
+and not four. **Read "one per column" as the common case rather than as the rule**; the unit is the
+documentation gap, and a column is only the usual shape of one. An element the file names as
+unestablished without applying
 the Provisional label, such as whether a given function runs on a given deployment target, is not
 in the count: the label scopes a documentation gap in a column, and that is a different thing.
 

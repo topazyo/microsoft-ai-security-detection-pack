@@ -410,9 +410,12 @@ the Microsoft Agent 365 SDK, as described in the Agent 365 development lifecycle
    found. A value travels only if you have looked at what it contains and it carries nothing of your
    own organisation's; if it carries anything of yours, the shape travels and the value does not.**
 5. **Establish the emission cadence**, which decides whether the query window is safe:
-   `AgentsInfo | where Timestamp > ago(30d) | summarize Rows = count(), FirstSeen = min(Timestamp),
-   LastSeen = max(Timestamp) by AgentId | summarize percentiles(Rows, 50, 95)`. If most agents show
-   one or two rows over 30 days, rows are change-driven and a short window drops stable agents.
+   `AgentsInfo | where Timestamp > ago(30d) | summarize Rows = count() by AgentId | summarize
+   percentiles(Rows, 50, 95)`. If most agents show one or two rows over 30 days, rows are
+   change-driven and a short window drops stable agents. **This is the same query checklist Group 3
+   ships**, which it has to be: a check stated in two places is one check. The two columns this step
+   used to compute for first and last sighting were dropped by the outer aggregation before anything
+   rendered, so removing them changes no result.
 6. Confirm whether any query you hold still references `AIAgentsInfo`, and which of the two tables
    your workspace returns.
 7. **Before scheduling the change-detection variant, settle its two open questions.** First, confirm

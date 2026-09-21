@@ -392,6 +392,13 @@ checklist.
    three or more, so this right-hand side mixes an indexed term with one that is not. The page frames
    that as an index-versus-scan path rather than a change in what matches, so carrying Group 2's
    result across is probably sound; it is not something the page says.
+   **What leaves this step is a shape, not the list it returns.** The query takes up to fifty
+   distinct names, and in your workspace those can include analytics rules you named yourself. **A
+   rule name your own workspace emits is your estate's naming rather than a value set Microsoft
+   publishes**, so describe what you found and send no name that is not among the seventeen this
+   file reproduces. The checklist and `docs/scope-and-out-of-scope.md` state the same rule; it is
+   restated here because this is the step that returns them, and a rule a reader meets only in
+   another file is a rule they may not meet at all.
 3. Confirm the AI plan is enabled on the subscriptions that host your Azure AI resources. A rule
    that never fires because the plan is off looks identical to a clean environment.
 4. Trigger one alert deliberately in a lab subscription and confirm it arrives, with its identifier

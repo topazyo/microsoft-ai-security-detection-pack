@@ -258,9 +258,10 @@ the checklist.
 > defined by an input row are set to `null`", and that "The default is `outer`". So the shape
 > mismatch above is expected to widen the result rather than to fail, on the page rather than on
 > assumption. **Whether these two legs parse together was settled on 2026-08-26**, in one tenant:
-the wrapper ran on Defender XDR advanced hunting and returned a row carrying `RuleState`. **The
-2026-08-24 run had settled the construct and not the combination**, because the wrapper did not run
-there at all, having referenced `Title`. Removing that reference is what let the pair be tested.
+> the wrapper ran on Defender XDR advanced hunting and returned a row carrying `RuleState`. **The
+> 2026-08-24 run had settled the construct and not the combination**, because the wrapper did not
+> run there at all, having referenced `Title`. Removing that reference is what let the pair be
+> tested.
 >
 > **A documented shape exists if you want one before running that check.** The `union` page reaches a
 > `print` leg through a named view rather than inline, and its notes state that "The `union` scope
@@ -268,7 +269,7 @@ there at all, having referenced `Title`. Removing that reference is what let the
 > branch as `let Unconfigured = view () { print RuleState = "RULE UNCONFIGURED ..." };` and then using
 > `(Unconfigured | where array_length(AgentProtectionActionTypes) == 0)` as the second leg puts the
 > same behaviour on a shape that page shows. **That form has not been parsed here either**, and the
-2026-08-24 run did not test it, and it
+> 2026-08-24 run did not test it, and it
 > does not change the `array_length()` problem below, which is what decides whether the branch fires
 > at all.
 >
@@ -452,8 +453,7 @@ covers less of it than the table's presence suggests.
    in the entity-join note above: the table is in preview, and it is not available for GCC at the
    table level, so the answer you recorded in step 1 carries over to it. What the reference is for
    here is the columns a join would return. **One run resolved the table and recorded three of its
-columns**; nothing further about it has been checked against a
-workspace.
+   columns**; nothing further about it has been checked against a workspace.
    **The concrete question to take to it is attribution.** Run the join in a lab tenant against a
    behaviour you generated in step 4, and record what its entity-type and entity-role columns carry
    for an agent-initiated behaviour. That is the one thing that would close the limit stated above,

@@ -61,9 +61,9 @@ temp/
 *.local
 *.bak
 
-# Agent and tooling state. This one is here because the rule that hides it today lives in the
-# repository this pack is authored in, and that rule does not travel with the pack. A published
-# copy would otherwise start with no rule for it at all.
+# Agent and tooling state. Local automation writes working state into a checkout, and none of it is
+# part of this pack. The rule is carried here so that a copy of this repository has one of its own
+# rather than depending on configuration it cannot see.
 .omc/
 
 # Editor and OS artefacts.
