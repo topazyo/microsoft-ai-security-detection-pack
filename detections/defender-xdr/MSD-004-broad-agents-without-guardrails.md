@@ -88,6 +88,21 @@ stamp 2026-06-03). Page title: **`AgentsInfo (Preview)`**.
 > assumption the note above rules out. Verification step 2 enumerates which forms your own platform
 > emits, and step 3 demonstrates the `isempty()` behaviour itself.
 
+> **Outcome: `AgentsInfo` did not resolve on any run this pack records.** The runs are dated
+> 2026-08-24, 2026-08-26 and 2026-09-11, and `docs/verification-methodology.md` states the outcome
+> for this table in exactly those terms. **Every query block in this file names Microsoft Defender
+> XDR advanced hunting as its deployment target and was submitted there, and none of them parsed
+> against the table**, because the table was not there to parse against. **Submitted is not the
+> same as ran, and this file has only the first.**
+> [MSD-003](MSD-003-agents-with-mcp-servers.md) records the same outcome for the same table, and
+> that file's `hash_sha256()` note is the one place a run on this target reached past it.
+> **So every statement here about what these queries return is a schema-verified construction
+> rather than an observed result**, which is what the hedges throughout this file rest on and why
+> none of them is written as a claim about behaviour.
+> **What this does not tell you is why the table was absent**, and this pack does not establish it:
+> the table is in preview, and whether it resolves for you is what the workspace verification below
+> is for. **One environment's answer on one date is not yours.**
+
 ## Query
 
 ```kusto
@@ -109,6 +124,10 @@ let EmptyForms = dynamic(["", "[]", "{}", "null"]);
 AgentsInfo
 | where Timestamp > ago(30d)
 | summarize arg_max(Timestamp, *) by AgentId
+// == is case-sensitive, so both filters match only the casing written here. A workspace
+// emitting a different casing on either column returns nothing, and an empty result reads as
+// no broad agents rather than as a failed filter. Both literals are used as Learn publishes
+// them. MSD-007 cites the operator pages for == and !=.
 | where LifecycleStatus == "Active"
 | where PublishedStatus == "Published"
 | extend
@@ -161,6 +180,19 @@ baseline, with `where AgentId in (HadGuardrails)`, so truncating it **shrinks th
 an agent whose guardrail evidence fell outside the surviving slice is dropped, and a genuine
 guardrail removal on that agent is not reported at all. **A rule failing this way returns nothing and
 reads as a clean estate**, which is why the check matters here even though nothing looks wrong.
+
+**Truncation is not the only thing that shrinks that inclusion list, and it is the conditional one
+of the two.** Lookback truncation arises only where the rule's frequency is shorter than the
+baseline leg reaches back. **The collapse inside the leg shrinks the list unconditionally and at
+every frequency**, because `HadGuardrails` holds each agent's last pre-window state rather than
+every state it held, which the paragraph under the change-detection query sets out in full. Both
+produce the same silent result, so **a check for one is not a check for the other**.
+
+> **Correction, 2026-09-20.** An earlier version of this passage attributed the shrinking of the
+> inclusion list entirely to lookback truncation, and named no other cause. **The collapse inside
+> the baseline leg produces the same shrink unconditionally**, which the `arg_max()` reference read
+> on the same date settles. The truncation case above is unchanged and still holds; what was wrong
+> was presenting it as the only one. `CHANGELOG.md` is the record.
 
 ### Posture rollup - run this first
 
@@ -216,10 +248,16 @@ let HadGuardrails =
     | where Timestamp between (ago(30d) .. ago(1d))
     | summarize arg_max(Timestamp, *) by AgentId
     | where tostring(Guardrails) !in~ (EmptyForms)
+    // arg_max(...) by AgentId returns one row per agent, so this distinct removes nothing as
+    // the leg stands, and HadGuardrails is each agent's LAST pre-window state rather than
+    // every state it held. The paragraph below this query states what that costs.
     | distinct AgentId;
 AgentsInfo
 | where Timestamp > ago(1d)
 | summarize arg_max(Timestamp, *) by AgentId
+// == is case-sensitive here too. A workspace emitting a different casing returns nothing from
+// this leg, which empties the variant rather than reporting no removals. See the note on the
+// primary query above.
 | where LifecycleStatus == "Active"
 | where tostring(Guardrails) in~ (EmptyForms)
 | where AgentId in (HadGuardrails)
@@ -229,6 +267,19 @@ AgentsInfo
 The primary query is a posture census. This variant is the one to schedule: `arg_max` shows current
 state only, so an agent whose guardrails were removed looks identical to one that never had any
 unless you compare against a baseline.
+
+**`HadGuardrails` is each agent's last state in the baseline window, not every state it held there,
+and that gives this variant a one-run detection window.** `arg_max(Timestamp, *) by AgentId`
+returns one row per agent: its reference page states that it "Returns a row in the table that
+maximizes the specified expression". So once a removal has appeared in a baseline-window snapshot,
+that agent's last pre-window state no longer shows guardrails, it drops out of `HadGuardrails`, and
+`where AgentId in (HadGuardrails)` excludes it from the current side. **The removal is then
+unreportable rather than merely reported late.** The variant catches a removal on the run that
+follows it and not afterwards, so **a missed run is a missed removal**: a paused rule, an ingestion
+delay that shifts a row across the window boundary, or an emission cadence slower than daily each
+produce a real removal that is never alerted, and the rule stays silent and reads as a clean
+estate. **That is the failure class `SECURITY.md` ranks worst**, and it is a property of this leg
+rather than of any workspace. Verification step 7 below says what to do after a scheduling gap.
 
 **What these queries return stays in your environment, and some of the columns they project need
 more care than the rest.** The query above and the change-detection variant both project
@@ -374,6 +425,13 @@ not a more accurate one.
    puts your own organisation's naming in the column. **Send the shape you found. A value travels
    only if you have looked at what it contains and it carries nothing of your own organisation's; if
    it carries anything of yours, the shape travels and the value does not.**
+7. **After any gap in the change-detection variant's schedule, re-run it once over a wider
+   current-side window before trusting its silence.** The paragraph under that query explains why:
+   `HadGuardrails` holds each agent's last pre-window state, so a removal that fell in the gap has
+   already left the inclusion list and no later scheduled run will report it. Widen
+   `Timestamp > ago(1d)` on the current side to cover the gap and compare the result against the
+   posture rollup from step 5. **A silent run is the expected output of this variant most days, so
+   silence after a gap tells you nothing on its own.**
 
 ## Sources
 
@@ -381,6 +439,7 @@ not a more accurate one.
 - [Detect and investigate threats to AI agents using Microsoft Defender (Preview) (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/security-for-ai/ai-agent-detection-protection) - last verified 2026-08-15
 - [`isempty()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/isempty-function) - last verified 2026-08-15, for the empty-`dynamic` behaviour the predicates work around, and re-read 2026-08-19 for the published example table quoted above. **Each date is kept rather than collapsed**, because each later read is what added the material recorded against it
 - [`tostring()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/tostring-function) - last verified 2026-08-16, for the coercion step and for the null case the `""` entry covers
+- [`arg_max()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/arg-max-aggregation-function) - read 2026-09-20, for the Returns statement that it "Returns a row in the table that maximizes the specified expression", which is what makes `HadGuardrails` each agent's last pre-window state rather than every state it held, and is therefore what gives the change-detection variant its one-run detection window. **This page was argued from in this file before it was cited**, which the entry records rather than leaves as a gap
 - [`array_length()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/array-length-function) - last verified 2026-08-16, for the null-on-non-array behaviour that rules it out here
 - [`in` operator (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/in-cs-operator) - last verified 2026-08-15, which documents dynamic-array expansion and the case-sensitive `in` / `!in` and case-insensitive `in~` / `!in~` variants; **re-read 2026-08-22** for its "Tabular expression" worked example, which is the `let`-bound form the removal variant's `in (HadGuardrails)` ships and which publishes its own output, and for the parameter note stating that "The search considers up to 1,000,000 distinct values". **Each date is kept rather than collapsed**, because the later read is what added the material recorded against it
 - [`in~` operator (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/in-operator) - last verified 2026-08-18, for the "Dynamic array" section, whose example passes a `dynamic([...])` literal directly to `in~` and publishes its output. It does not exemplify the `let`-bound form this file's `in~` predicates ship, and the `let` variant beside it substitutes another operator; [`docs/verification-methodology.md`](../../docs/verification-methodology.md) section 6 states what that leaves open

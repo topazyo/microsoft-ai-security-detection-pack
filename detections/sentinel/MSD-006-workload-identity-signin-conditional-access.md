@@ -68,14 +68,19 @@ service principals."
 ## Schema this depends on
 
 Columns quoted from the `AADServicePrincipalSignInLogs` table reference on Microsoft Learn, read
-2026-08-15.
+2026-08-15, **re-read 2026-09-20, when the rendered "Last updated on" date read 2026-08-28** and the
+page's `ms.date` read 2026-08-27, which is the one-day split these generated reference pages carry.
+That re-read changed one cell:
+`AppId`'s description now reads "Microsoft Entra ID" where it read "Azure Active Directory" before,
+and the table below carries the current wording. The other rows quoted here were unchanged on that
+read, including the "Th identifier" typo in `FederatedCredentialId`, which is Microsoft's.
 
 | Column | Data type | Learn description (verbatim) |
 |---|---|---|
 | `TimeGenerated` | `datetime` | The date and time of the event in UTC |
 | `ServicePrincipalId` | `string` | ID of the service principal who initiated the sign-in |
 | `ServicePrincipalName` | `string` | Service Principal Name of the service principal who initiated the sign-in |
-| `AppId` | `string` | Unique GUID representing the app ID in the Azure Active Directory |
+| `AppId` | `string` | Unique GUID representing the app ID in the Microsoft Entra ID |
 | `ConditionalAccessStatus` | `string` | Status of all the conditionalAccess policies related to the sign-in |
 | `ConditionalAccessPolicies` | `string` | Details of the conditional access policies being applied for the sign-in |
 | `ClientCredentialType` | `string` | The type of client credential used. Examples include client assertion, client secret, etc. |
@@ -94,20 +99,36 @@ reproduced as published rather than silently corrected, confirmed against the li
 2026-08-19. MSD-005 marks a Microsoft grammatical error on its own table description in the same way
 and for the same reason: a reader diffing this table against the page should find the two identical.
 
-> **Provisional: `ConditionalAccessStatus` has no documented value list.** Learn says what the
-> column means, not what it can contain. This pack therefore **does not filter on a status value** -
-> the shipped query groups by it so you can read the values your own tenant emits, and the narrowing
-> filter is one you complete afterwards. Guessing a value string here would be inventing schema.
+> **Provisional: the `ConditionalAccessStatus` value set. Corrected 2026-09-19.** **An earlier
+> version of this note said the column "has no documented value list". That is wrong as written**,
+> and the correction matters because this note is the stated reason for the shipped query's shape.
+> **Two different surfaces are involved.** The Azure Monitor Logs reference for this table
+> documents what the column means and publishes no value list for it. **Microsoft Graph does
+> publish an enumeration for the analogous `signIn` property**, `conditionalAccessStatus`: "The
+> possible values are: `success`, `failure`, `notApplied`, and `unknownFutureValue`."
+>
+> **What is genuinely undocumented is the link between the two.** No page this pack has found
+> states that the Log Analytics column stores exactly those strings, in that casing. **The shipped
+> query therefore still does not filter on a status value** - it groups by the column so you can
+> read what your own environment stores, and the narrowing filter is one you complete afterwards.
+> **The reason is no longer that guessing would invent schema; it is that the documented
+> enumeration belongs to a different surface and this column's own values are unconfirmed.**
+>
+> Sources: the [`AADServicePrincipalSignInLogs` table
+> reference](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/aadserviceprincipalsigninlogs)
+> and the [Microsoft Graph `signIn` resource
+> type](https://learn.microsoft.com/en-us/graph/api/resources/signin?view=graph-rest-1.0), both read
+> 2026-09-19.
 
 > **Provisional: `ResultType`.** Learn describes it as "The result of the sign-in operation can be
 > Success or Failure", which describes the semantics rather than the stored strings. The shipped
-> query does not filter on it. Confirm your own values before adding one. **A lab tenant stored
+> query does not filter on it. Confirm your own values before adding one. **A tenant stored
 > numeric codes there on 2026-08-24 rather than either of the two words Learn names**, which is the
 > reason this note exists and is worth reading before anyone writes `ResultType == "Success"`.
 
 > **Provisional: `Agent`.** Learn's entire description is "Details of agentic sign-in." No shape, no
 > values. It is projected for review and never filtered on. Treat any read of it as unverified until
-> you have inspected it. **A lab tenant returned a JSON object on 2026-08-24**, which is a shape
+> you have inspected it. **A tenant returned a JSON object on 2026-08-24**, which is a shape
 > rather than a value set, and one tenant rather than a documented guarantee.
 
 > **Provisional: the serialisation of `ConditionalAccessPolicies` and `LocationDetails` is not
@@ -115,7 +136,7 @@ and for the same reason: a reader diffing this table against the page should fin
 > contents as "Details of the conditional access policies being applied for the sign-in" and
 > "Details of the sign-in location" - composite descriptions with no published value format. Whether
 > your workspace stores a flat string or a serialised structure in either one is therefore not
-> established by the page. **A lab tenant answered it on 2026-08-24**: `ConditionalAccessPolicies`
+> established by the page. **A tenant answered it on 2026-08-24**: `ConditionalAccessPolicies`
 > came back a JSON array and `LocationDetails` a JSON object, so an operator there needs
 > `parse_json()` rather than a string comparison. **The label stays Provisional**, because it records
 > what the cited page confirms, and the page still publishes no format for either column. Inspect
@@ -134,7 +155,8 @@ and for the same reason: a reader diffing this table against the page should fin
 // MSD-006 step 1 - the Conditional Access posture of every workload identity, by status value.
 // Deployment target: Microsoft Sentinel analytics rule or hunting query (Log Analytics).
 // Schema verified against Microsoft Learn on 2026-08-15.
-// No filter on ConditionalAccessStatus: Learn publishes no value list. Read yours from this output.
+// No filter on ConditionalAccessStatus: this column's reference publishes no value list, and the
+// enum Graph documents for the analogous property is unconfirmed here. Read yours from this output.
 AADServicePrincipalSignInLogs
 | where TimeGenerated > ago(7d)
 | summarize
@@ -180,7 +202,7 @@ AADServicePrincipalSignInLogs
 | order by TimeGenerated desc
 ```
 
-**The `NoPolicyApplied` literal above parsed in a lab tenant on 2026-08-24.** It is the comment-only
+**The `NoPolicyApplied` literal above parsed in a tenant on 2026-08-24.** It is the comment-only
 `dynamic([...])` form, MSD-008 ships the same construct, and checklist Group 1b check 2 prints the
 runnable test for it. **That run ran the Group 1b test on both surfaces, and ran this step directly
 in the Sentinel workspace**, which is the deployment target this file declares: the literal parsed,
@@ -191,20 +213,38 @@ fill it before deploying. A literal that does not parse fails the statement inst
 rather than returning nothing. **The run answered which of the two you get, in one tenant on one
 date.** Run Group 1b check 2 before you rely on this block in your own.
 
-> **Settled 2026-08-25: the placeholder stays empty. What not to fill it with, and why.**
-> `ConditionalAccessStatus` has no documented value list, and the 2026-08-24 lab run emitted
-> `notApplied` for it. **That is one tenant on one date and not a documented value set**,
-> so filling the literal with it would generalise from a single observation into shipped copy, which
-> is the defect this pack exists to avoid. The placeholder therefore stays empty, and the value is
-> recorded here so a reader completing step 2 knows what one workspace produced. Read your own
-> values first; the shipped query groups by this column so that you can.
+> **The placeholder stays empty and the shipped query is unchanged. Read your own values first**,
+> and the shipped query groups by this column so that you can. That instruction is unchanged by
+> everything below, which is the record of how it was reached.
 >
-> **Corroborated 2026-09-11, and the placeholder still stays empty.** A third run, in a production
-> tenant rather than the lab one, emitted the same single value `notApplied` for this column. **Two
-> estates on two dates agreeing is stronger evidence than one**, and it is still not a documented
-> value set, so the reason for leaving the literal empty is unchanged and the shipped query is
-> unchanged. **What this does rule out** is the reading that the 2026-08-24 result was an artefact of
-> one lab tenant's configuration. Recorded as corroboration rather than as grounds to fill.
+> **Settled 2026-08-25: what not to fill it with, and why.**
+> The 2026-08-24 run emitted `notApplied` for this column. **That is one environment on one
+> date**, so filling the literal with it would generalise a single observation into shipped copy,
+> which is the defect this pack exists to avoid. **The basis for this settlement was corrected on
+> 2026-09-19.** It originally rested on the claim that the value was not documented anywhere, and
+> Microsoft Graph does document `notApplied` for the analogous property. **The settlement stands on
+> the narrower ground**: a value read in one environment is not a value set to ship, and filtering
+> to a single status narrows the detection rather than widening it. The value is recorded here so a
+> reader completing step 2 knows what one workspace produced.
+>
+> **Re-observed 2026-09-11.** A third run, on a later date, read the same value for this column.
+> **That agreement is not corroboration and is not treated as any here**, for the reason set out
+> immediately below.
+>
+> **Agreement between two readings is only informative if at least one of them could have returned a
+> different value, and this pack never established that for either reading.** Microsoft states that
+> Conditional Access policy
+> for workload identities "can be applied to single tenant service principals that are registered in
+> your tenant. Microsoft and third-party SaaS applications, including multitenant apps, are not
+> covered by these policies." That is the workload-identity article quoted in the scope limits above,
+> re-read on 2026-09-19. **So for sign-ins of the excluded kind no policy could apply and the status
+> follows by design**, whatever the environment. **This pack publishes no policy
+> inventory**, so it cannot separate that mechanism from a genuine finding. **The control that would
+> be informative is an environment known to hold at least one policy in scope targeting workload
+> identities, which is a new run rather than a re-reading.**
+>
+> **The 2026-08-25 settlement stands on its own reason**, which is the one given above and is
+> sufficient without any appeal to agreement between readings.
 
 ### New-identity and new-resource change detection
 
@@ -229,26 +269,30 @@ This variant is usually the more useful of the two. Step 1 is a census; this one
 which is what a scheduled rule should do. The reason is in the false-positive guidance below.
 
 **What the four shipped queries in this file return stays in your environment, and they do not
-return the same things.** Step 1 groups by named service principals and returns a **count** of distinct source
-network addresses, `DistinctSourceIPs`, beside the resources those principals reached, the credential
-types they used, and first-seen and last-seen timestamps. **The change-detection variant returns a
-set** of source addresses, `SourceIPs`, beside the same principals and resources. **Step 2 carries
-most of all**: it is a per-row projection, one row per sign-in, naming the principal, the application
-identity, the Conditional Access policies, the federated credential identifier, the resource, the
-source address, the location details, `Agent` and the correlation identifier. The credential-type
-view groups named principals by credential type. **The timestamps are estate data as much as the
-addresses are**, which is the rule MSD-008's verification step 2 states for first-seen and
-last-seen. **`Agent` is a free-text column**: its one-sentence description is of per-event content
-rather than of a class this platform assigns, which is the test verification step 4 below states and
-the test the checklist applies. **Learn publishing no value set for a column is not on its own what
-makes it free text**, and step 4 names the counterexample this file already ships. So for `Agent`
-what travels is the column name and the shape you found and never the contents. **Apply that same
-test to any other free-text column these queries return rather than looking for it on a list.** What travels outward is a column name or
-a value name, never a result row, a row count, or anything inside one. **That default holds where a
-column carries a closed set the platform defines; where a column carries free text the value is
-itself estate data and the default does not reach it.** Checklist Group 0 states the same rule for
-every step in the pack, and this file repeats it because a reader who deploys one detection may
-never open the checklist.
+return the same things.** Step 1 groups by named service principals and returns a **count** of
+distinct source network addresses, `DistinctSourceIPs`, beside the resources those principals
+reached, the credential types they used, and first-seen and last-seen timestamps. **The
+change-detection variant returns a set** of source addresses, `SourceIPs`, beside the same
+principals and resources. **Step 2 carries most of all**: it is a per-row projection, one row per
+sign-in, naming the principal, the application identity, the Conditional Access policies, the
+federated credential identifier, the resource, the source address, the location details, `Agent` and
+the correlation identifier. The credential-type view groups named principals by credential type.
+**The timestamps are estate data as much as the addresses are**, which is the rule MSD-008's
+verification step 2 states for first-seen and last-seen. **`Agent` is a free-text column**: its
+one-sentence description is of per-event content rather than of a class this platform assigns, which
+is the test verification step 4 below states and the test the checklist applies. **Learn publishing
+no value set for a column is not on its own what makes it free text**, and step 4 names the
+counterexample this file already ships. So for `Agent` what travels is the column name and the shape
+you found and never the contents. **Apply that same test to any other free-text column these queries
+return rather than looking for it on a list.** **This file's own queries return these**:
+`ServicePrincipalName` and `ResourceDisplayName` carry a description of per-event content and no
+published value set, exactly as `Agent` does, so what travels from either is the column name and the
+shape you found and never the contents. What travels outward is a column name or a value name, never
+a result row, a row count, or anything inside one. **That default holds where a column carries a
+closed set the platform defines; where a column carries free text the value is itself estate data
+and the default does not reach it.** Checklist Group 0 states the same rule for every step in the
+pack, and this file repeats it because a reader who deploys one detection may never open the
+checklist.
 
 ### Credential-type view
 

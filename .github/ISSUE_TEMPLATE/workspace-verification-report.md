@@ -31,11 +31,12 @@ labels: verification
 > and read the never-paste list in the detection file itself, which bars columns the two shared
 > surfaces do not repeat.
 
-This repository ships queries its author has run once, in **one** lab tenant, on 2026-08-24, and
-never in production. **Not every query ran even there**, and **no detection here has been observed
-firing**, because that run generated no event. Every verification report closes part of that gap, and a **negative** result is as useful as
-a positive one. **A report from a second tenant is worth more than a second report from the first**,
-because what is missing is breadth rather than another reading of the same estate.
+This repository ships queries its author has run **three** times, on 2026-08-24, 2026-08-26 and
+2026-09-11. **Not every query ran**, and **no detection here has been observed firing**. Every
+verification report closes part of that gap, and a **negative** result is as useful as a positive
+one. **Reports from tenants other than the
+author's are what this pack is missing**, because breadth is worth more here than another reading of
+ground already covered.
 
 ## Detection
 
@@ -45,10 +46,15 @@ because what is missing is breadth rather than another reading of the same estat
 
 **The next two fields are optional, and here is why you might leave them blank.** A report from an
 identifiable account saying a named detection is **Blocked in production** is a public statement
-that your organisation does not have that coverage. This repository is careful not to disclose its
-author's security posture and it will not ask you to disclose yours. Report from a personal account,
-omit these two fields, or use the private route in [`SECURITY.md`](../../SECURITY.md) - a report
-with them blank is still useful.
+that your organisation does not have that coverage. This repository does not identify the
+environments its own author ran against, and it will not ask you to identify yours. **It does
+publish, of its own runs, which detections could not resolve their table or a column, what shape a
+function returned, which serialisation a column emitted, and a value a tenant emitted where no page
+this pack cites publishes one**, so take the reassurance as being about identification rather than
+about outcomes. [`docs/scope-and-out-of-scope.md`](../../docs/scope-and-out-of-scope.md) sets out
+that class, and this sentence restates it. Report from a personal account, omit these two fields, or
+use the private route in [`SECURITY.md`](../../SECURITY.md) - a report with them blank is still
+useful.
 
 - Workspace type *(optional)*: lab / production
 - Environment note *(optional, for example: GCC, sovereign cloud, commercial)*:
@@ -59,9 +65,10 @@ with them blank is still useful.
 - [ ] **Runs, unconfirmed** - query ran without error, no positive control observed
 - [ ] **Blocked** - table absent, connector absent, or plan not enabled
 - [ ] **Schema mismatch** - a column the detection file records is missing or typed differently, or
-      a value falls outside a documented value set that file reproduces. A value from a column the
-      pack records no value set for is not a mismatch - record it under **Undocumented elements you
-      resolved** below
+      a value falls outside a documented value set that file reproduces **and that reproduction no
+      longer matches the page it came from**. Two things are **not** a mismatch: a value from a
+      column the pack records no value set for, and a value beyond a reproduction that still
+      matches its page. Record either under **Undocumented elements you resolved** below
 
 If **Schema mismatch**, please also open a Schema correction issue - that is the one that gets acted
 on first.

@@ -3,10 +3,6 @@
 **Cited, status-labelled KQL detections for AI-security signals in Microsoft Sentinel and Microsoft
 Defender XDR - built only on tables and columns Microsoft documents.**
 
-> **Draft. Not published, and this notice is removed at repository creation.** It links to nothing:
-> the design and review records that produced this pack are working documents and do not travel
-> into the public repository.
-
 ---
 
 ## What this is
@@ -19,9 +15,9 @@ spots.
 The point is not volume. It is that **every schema element a detection file or a shipped query relies
 on is one of three things: quoted from a Microsoft Learn page read on a stated date, or marked
 Provisional or Requires further validation with the reason stated and a workspace step that resolves
-it, or labelled at the point of use as observed in a lab tenant on a stated date rather than as
+it, or labelled at the point of use as observed in a tenant on a stated date rather than as
 documented.** **The third class has one member and it is named here rather than left for a reader to
-find**: MSD-002's filter carries a `DeliveryLocation` spelling that a lab tenant emitted on
+find**: MSD-002's filter carries a `DeliveryLocation` spelling that a tenant emitted on
 2026-08-24 and that Microsoft Learn does not publish, kept beside the published spelling so the
 filter matches either, and labelled as observed inside both of that file's query blocks. **A member
 of that class may widen a filter and may never narrow one**, and that bound reaches an aggregation on
@@ -90,7 +86,7 @@ pack exists to make.
 
 | ID | Detection | Table | Status | Deploy as |
 |---|---|---|---|---|
-| [MSD-005](detections/sentinel/MSD-005-defender-for-cloud-ai-alerts.md) | Defender for Cloud AI-workload alerts arriving in Sentinel | `SecurityAlert` | **GA (stated)** for the plan; 2 of 17 alerts Preview | **Hunting query** - see the duplicate-incident caveat |
+| [MSD-005](detections/sentinel/MSD-005-defender-for-cloud-ai-alerts.md) | Defender for Cloud AI-workload alerts arriving in Sentinel | `SecurityAlert` | **GA (stated)** for the plan; 2 of 17 alerts Preview | **Hunting query**, or an analytics rule with incident creation off - see the duplicate-incident caveat |
 | [MSD-006](detections/sentinel/MSD-006-workload-identity-signin-conditional-access.md) | Workload-identity sign-in where Conditional Access did not apply | `AADServicePrincipalSignInLogs` | **GA (no preview qualifier)**; 5 elements Provisional | Change-detection variant only |
 | [MSD-007](detections/sentinel/MSD-007-copilot-settings-change.md) | Copilot configuration changes in the Sentinel audit stream | `CopilotActivity` | **Requires further validation** | Discovery first; step 2 once step 1 is read |
 
@@ -109,10 +105,10 @@ is more useful than the headline number:
   variants only. Each of those three files says which variant to schedule and why. Their primary
   queries are posture reviews rather than rules. **MSD-003's variant carries one extra condition**:
   it is the only query here meant for deployment that depends on a hashing function. **The
-  2026-08-24 lab run ran that check in one lab tenant**: `hash_sha256()` ran in Defender XDR
+  2026-08-24 run ran that check in one tenant**: `hash_sha256()` ran in Defender XDR
   advanced hunting there without error and returned a digest of the documented shape, which is a
   smaller result than a match against a published value and is all the cited page supports. It did not make the
-  variant deployable, because `AgentsInfo` did not resolve in the same tenant. **Every other use of
+  variant deployable, because the table did not resolve there. **Every other use of
   one in this pack is a check you run once rather than a rule you schedule.** **MSD-003's verification step 7
   opens with a one-line check that settles availability**, and the answer decides whether MSD-003 has
   a deployable form at all; the step then goes on to a second query that measures how much the
@@ -186,7 +182,8 @@ there until Microsoft's documentation stops contradicting itself.
 
 See [`docs/scope-and-out-of-scope.md`](docs/scope-and-out-of-scope.md) for the full statement.
 Briefly: Microsoft 365 Copilot chat-prompt hunting, anything not backed by a public primary source,
-tenant-specific values, automated deployment tooling, and any detection built on a table this
+tenant-specific values beyond the single labelled observed value section 1 of the methodology names,
+automated deployment tooling, and any detection built on a table this
 author could not verify against Microsoft Learn.
 
 ## Relationship to the capability-status matrix
@@ -208,17 +205,19 @@ Every element traces to a named page and a date. See
 [`docs/verification-methodology.md`](docs/verification-methodology.md), which also records - in its
 own section - what verification did **not** include.
 
-**Its author worked through this checklist once, on 2026-08-24, in one lab tenant**, against a
-Microsoft Sentinel workspace and Microsoft Defender XDR advanced hunting. **That run did not complete
-it, so the release condition the checklist sets is not met.** What it did not reach goes wider than
-the queries: the steps asking for a generated event, the `AgentsInfo` steps, the `BehaviorEntities`
-join, the plan checks and the `SecurityAlert` identifier question are all recorded as not completed.
-Of the queries it did submit, two detections could not resolve their table there and one could not
-resolve a column.
-[`CHANGELOG.md`](CHANGELOG.md) records the outcome for each, and the corrections that run produced
-are applied here. **No event was generated, so no detection has been observed firing**, and every
-query remains a schema-verified construction rather than an observed result. That is why the
-checklist is still a release gate, and why one run in one lab tenant does not close it.
+**The author has worked through this checklist three times, on 2026-08-24, 2026-08-26 and
+2026-09-11**, against a Microsoft Sentinel workspace and Microsoft Defender XDR advanced hunting.
+**This pack does not identify any environment it ran against.** **No run has
+completed the checklist, so the release condition the checklist sets is not met.** What they did not
+reach goes wider than the queries: the steps asking for a generated event, the `AgentsInfo` steps,
+the `BehaviorEntities` join, the plan checks and the `SecurityAlert` identifier question are all
+recorded as not completed on at least one run. Of the queries submitted, two detections could not
+resolve their table and one could not resolve a column.
+[`CHANGELOG.md`](CHANGELOG.md) records the three run dates, and the corrections those runs produced
+are applied here. **No detection here has yet been observed firing.** Every query remains a
+schema-verified construction rather
+than an observed result. That is why the checklist is still a release gate, and why three incomplete
+runs do not close it.
 
 ## Framework mappings
 
@@ -232,7 +231,12 @@ cell.
 
 Every file in this repository is built from public primary sources, and carries nothing on the
 confidentiality exclusion list in
-[`docs/scope-and-out-of-scope.md`](docs/scope-and-out-of-scope.md).
+[`docs/scope-and-out-of-scope.md`](docs/scope-and-out-of-scope.md). **Run outcomes are published
+about this pack's own environment rather than withheld**, and that file says why they are not on the
+list. **They are not the only category here that describes the author's own environment rather than
+a reader's**: the same file points at an observed-value class set out in
+[`docs/verification-methodology.md`](docs/verification-methodology.md), which a shipped query acts
+on, and at further values a tenant emitted that no query acts on.
 
 **That list is a rule for contributions too**, and it is enforced rather than requested. An issue or
 comment containing any of it will be **deleted rather than edited**, because editing leaves the

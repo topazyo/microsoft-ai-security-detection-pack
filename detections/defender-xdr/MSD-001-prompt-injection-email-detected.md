@@ -22,7 +22,10 @@ It is also the narrowest: it covers the **email channel only**.
 ## Schema this depends on
 
 Every column below is quoted from the `EmailEvents` table reference on Microsoft Learn, read
-2026-08-15. The page's own "Last updated on" stamp reads 2026-08-03.
+2026-08-15, when the page's `ms.date` read 2026-08-03. **Re-read 2026-09-20, when the rendered
+"Last updated on" date read 2026-09-02**, which is a second field rather than a later value of the
+first: `ms.date` still read 2026-08-03 on that later read. The three value lists and the Streaming
+API note were unchanged on that read, and the remaining rows were not re-enumerated.
 
 | Column | Data type | Learn description (verbatim, elisions marked) |
 |---|---|---|
@@ -45,7 +48,6 @@ Every column below is quoted from the `EmailEvents` table reference on Microsoft
 On the page the two FROM rows carry that clause and the two MAIL FROM rows carry a different one, so
 the pairing goes by header rather than by adjacency, and the repetition between the two rows here is
 published rather than a transcription slip. Confirmed against the live reference page on 2026-08-20.
-**A later pass should not read it as a copy-paste error and cut it back.**
 
 The matched value, **`Prompt injection protection`**, is a documented detection-technology name. The
 page that defines it is the email-entity detection-technology reference, not the prompt-injection
@@ -60,7 +62,7 @@ detection lands, which is the quote in the status evidence below.
 > below uses `has` rather than `==` for that reason. Confirm the actual serialisation in your own
 > workspace before deploying (verification step 2).
 
-> **A lab tenant emitted `DeliveryLocation` and `EmailDirection` values beyond the published lists
+> **A tenant emitted `DeliveryLocation` and `EmailDirection` values beyond the published lists
 > on 2026-08-24, and this file is affected differently from MSD-002.** The lists above are
 > Microsoft's, re-read 2026-08-24 and unchanged by that read. MSD-002 filters on both columns, and
 > its `DeliveryLocation` filter matched nothing, which is recorded in that file along with the
@@ -265,7 +267,7 @@ Run these before turning this into a custom detection rule. Full procedure in
      not settle, and this step is where it matters:** every example of `has` on it puts a single term on
      the right-hand side, and `Prompt injection protection` is three. Whether `has` matches a
      multi-term right-hand side at all was an assumption this pack could not verify from that page,
-     re-read 2026-08-17, which documents neither behaviour. **The 2026-08-24 lab run tested it and a
+     re-read 2026-08-17, which documents neither behaviour. **The 2026-08-24 run tested it and a
      multi-term right-hand side matched**, on both surfaces, with all three of Group 2's positive
      controls true. **What that run did not do is separate the readings.** It did not exclude the
      reading on which the terms match while separated, which is the residual Group 2's own table
@@ -304,7 +306,7 @@ Run these before turning this into a custom detection rule. Full procedure in
      documented on the same page as "Same as `has` but works on all of the elements" with the worked
      example `"North and South America" has_all("south", "north")`. **The shape to run is
      `where DetectionMethods has_all ("Prompt", "injection", "protection")`**, which the 2026-08-24
-     lab run did not exercise: the operator test it ran covers `has` with a multi-term right-hand
+     run did not exercise: the operator test it ran covers `has` with a multi-term right-hand
      side, not this split form. **`has_all` is order-independent and position-independent**, so it matches a
      value carrying all three terms in any arrangement and is weaker than a phrase match. **Against
      the published value set that weakness cannot bite**, because on the detection-technology page
@@ -324,7 +326,7 @@ Run these before turning this into a custom detection rule. Full procedure in
 
 ## Sources
 
-- [EmailEvents table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailevents-table) - last verified 2026-08-15, re-read 2026-08-20 for the `SenderFromDomain` description restored above and for the pairing of the four sender rows by header, each pair sharing its own trailing clause; **re-read 2026-08-24** for the `DeliveryLocation` and `EmailDirection` value lists, which that read confirmed unchanged and which is the read the lab-outcome note above rests on. **Each date is kept rather than collapsed**, because each later read is what added the material recorded against it
+- [EmailEvents table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailevents-table) - last verified 2026-08-15, re-read 2026-08-20 for the `SenderFromDomain` description restored above and for the pairing of the four sender rows by header, each pair sharing its own trailing clause; **re-read 2026-08-24** for the `DeliveryLocation` and `EmailDirection` value lists, which that read confirmed unchanged and which is the read the outcome note above rests on. **Each date is kept rather than collapsed**, because each later read is what added the material recorded against it
 - [Prompt injection protection in Microsoft Defender for Office 365 (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-office-365/step-by-step-guides/prompt-injection-protection-defender-for-office-365) - **two dated reads, and both are load-bearing.** Last verified 2026-08-17, for the Plan 2 scope sentence, the page stamp, and the absence of any preview qualifier. **The "Applies to" line quoted above is from the 2026-08-16 read**, which is the read that recorded it; the 2026-08-17 conversion did not surface that element, and a conversion is evidence of presence rather than of absence for a page element
 - [String operators (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/datatypes-string-operators) - last verified 2026-08-17, for the term-based `has`, the subsequence `contains`, the definition of a term, the `has_any` list form used in verification step 2, and the `has_all` split form quoted there with its `"North and South America" has_all("south", "north")` worked example; re-read 2026-08-22 for the term-index sentences that MSD-005's verification step 2 and the checklist's Group 5 both quote, namely the three-character threshold and the scan the page says a shorter term falls back to. **Each date is kept rather than collapsed**, because each later read is what added the material recorded against it, and that re-read does not move the last-verified date above
 - [Understand detection technology in the email entity page (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-office-365/step-by-step-guides/understand-detection-technology-in-email-entity) - last verified 2026-08-16; **this is the page carrying the `Prompt injection protection` definition quoted above**

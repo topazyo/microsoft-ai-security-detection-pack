@@ -2,14 +2,15 @@
 
 ## Validate every query in your own environment
 
-**Its author worked through the verification checklist once, on 2026-08-24, in one lab tenant** - a
-Microsoft Sentinel workspace and Microsoft Defender XDR advanced hunting. **Not every query ran, and
-the checklist was not completed**: two detections could not resolve their table there, one could not
-resolve a column, and several steps are recorded as not completed.
-[`CHANGELOG.md`](CHANGELOG.md) records the outcome for each. **That run generated no event, so no
-detection in this pack has been observed firing**, and every query here remains a construction
-validated against Microsoft Learn schema documentation rather than an observed result. Nothing the
-run established generalises past a single lab tenant on a single date.
+**The author has worked through the verification checklist three times, on 2026-08-24, 2026-08-26
+and 2026-09-11** - against a Microsoft Sentinel workspace and Microsoft Defender XDR advanced
+hunting. **This pack does not identify any environment it ran against.** **Not every
+query ran, and no run completed the checklist**: two detections could not resolve their table, one
+could not resolve a column, and several steps are recorded as not completed on at least one run.
+[`CHANGELOG.md`](CHANGELOG.md) records the three run dates. **No detection in this pack has
+been observed firing.** Every query
+here remains a construction validated against Microsoft Learn schema documentation rather than an
+observed result. **Nothing the runs established generalises past three dates.**
 
 Every detection in this pack depends on at least one element Microsoft does not document - a value
 format, a value set, an emission cadence, or the internal shape of a `dynamic` column. Three of them

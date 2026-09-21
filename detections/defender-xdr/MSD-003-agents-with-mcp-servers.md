@@ -111,6 +111,9 @@ AgentsInfo
 | summarize arg_max(Timestamp, *) by AgentId
 | extend McpServersRaw = tostring(McpServers)
 | where isnotempty(McpServersRaw) and McpServersRaw !in~ ("[]", "{}", "null")
+// == is case-sensitive, so this matches "Active" and no other casing. A workspace emitting a
+// different casing returns nothing here, and an empty result reads as a clean estate. The
+// literal is used as Learn publishes it. MSD-007 cites the operator pages for == and !=.
 | where LifecycleStatus == "Active"
 | project
     Timestamp,
@@ -149,9 +152,9 @@ than you consume its output, or read the result as a floor on the population and
 becomes a custom detection rule, and MSD-001 records that recommendation and the enrichment it
 names. `Timestamp` is projected here. **`ReportId` was not read on the `AgentsInfo` reference and
 does not appear in the schema table above**, so this file does not project it; confirm against the
-`getschema` diff in verification step 1 before building a rule from this query. This detection is
-written to be run and reviewed rather than scheduled as a rule, so nothing here depends on the
-answer.
+`getschema` diff in verification step 1 before building a rule from this query. The primary query is
+a posture census meant to be read rather than scheduled; the change-detection variant is the one
+this file says to schedule, so the recommendation and the enrichment it names bear on that variant.
 
 **The custom-detection-rules page also says not to filter on `Timestamp` or `TimeGenerated`, and sets
 the rule's lookback from its frequency rather than from the query.** MSD-001 records that in full,
@@ -177,10 +180,16 @@ let baseline =
     | where Timestamp between (ago(30d) .. ago(1d))
     | summarize arg_max(Timestamp, *) by AgentId
     | extend McpFingerprint = hash_sha256(tostring(McpServers))
+    // arg_max(...) by AgentId returns one row per agent, so this distinct removes nothing as
+    // the leg stands. It is kept because it states what the baseline is keyed on, and it
+    // becomes load-bearing the moment the collapse above is removed.
     | distinct AgentId, McpFingerprint;
 AgentsInfo
 | where Timestamp > ago(1d)
 | summarize arg_max(Timestamp, *) by AgentId
+// == is case-sensitive here too. A workspace emitting a different casing returns nothing from
+// this leg, which empties the variant rather than reporting no change. See the note on the
+// primary query above.
 | where LifecycleStatus == "Active"
 | extend McpServersRaw = tostring(McpServers)
 | where isnotempty(McpServersRaw) and McpServersRaw !in~ ("[]", "{}", "null")
@@ -197,11 +206,27 @@ fingerprint join catches both.
 **The baseline leg applies neither the lifecycle filter nor the empty-forms predicate the current
 side applies, and the lifecycle one is worth stating rather than leaving to be rediscovered.** With
 no `LifecycleStatus == "Active"` filter, the baseline still carries a fingerprint for an agent that
-was blocked, uninstalled or deleted at some point in the window. **That runs in the safe direction**:
-a configuration already seen stays recognised as already seen, so reactivating an agent whose MCP
-configuration has not changed does not alert as though it were new. A reader comparing the two legs
-will notice the difference, and this is what it does. **What the empty-forms omission does is set
-out below**, under "It cannot fire on removal".
+was blocked, uninstalled or deleted at some point in the window, so reactivating an agent whose MCP
+configuration is unchanged since its last snapshot does not alert as though it were new.
+
+**What the baseline holds is each agent's most recent configuration in the window rather than every
+configuration seen in it**, because `arg_max(Timestamp, *) by AgentId` returns one row per agent:
+its reference page states that it "Returns a row in the table that maximizes the specified
+expression". **So this leg is a transition test rather than a novelty test**, and the difference is
+worth stating because it is not what a reader expects from the word baseline. A configuration that
+appeared early in the window and was superseded before the window closed is not in the baseline,
+and a revert to it alerts. **That bites hardest where the fingerprint churns**, which is the
+stability limit set out below this query: an alternating serialisation differs from the last state
+on every flip, where a baseline holding every configuration seen would stop alerting once both
+forms had appeared. A reader comparing the two legs will notice the difference, and this is what it
+does. **What the empty-forms omission does is set out below**, under "It cannot fire on removal".
+
+> **Correction, 2026-09-20.** An earlier version of this passage said the missing lifecycle filter
+> "runs in the safe direction" on the ground that "a configuration already seen stays recognised as
+> already seen". **That ground is false of a baseline leg that collapses to one row per agent**,
+> and the `arg_max()` reference read on the same date settles it. The conclusion about reactivated
+> agents survives and is kept above; the general claim about any configuration already seen does
+> not, and the transition-versus-novelty paragraph replaces it. `CHANGELOG.md` is the record.
 
 A 30-day baseline is a starting point, not a recommendation. Set it to whatever exceeds your
 agent-onboarding cycle, and re-check it after the first month. **On the current-day side**, the
@@ -255,11 +280,13 @@ deploys one detection may never open the checklist.
 > fingerprint entirely, because a removal is a transition between two states rather than a change
 > of hash.
 >
-> **`hash_sha256()` ran on this deployment target in a lab tenant on 2026-08-24.** That run called it
-> in Defender XDR advanced hunting and it returned the expected SHA-256 digest of the string it
-> hashed, which answers the availability question this note previously left open, for that tenant on
+> **`hash_sha256()` ran on this deployment target in a tenant on 2026-08-24.** That run called it
+> in Defender XDR advanced hunting and it returned a 64-character hexadecimal digest. That
+> function's reference page describes its return as a hex string and states no length, and no
+> published value was matched against it, so
+> what the run settles is the availability question for that tenant on
 > that date. **It does not make this variant
-> deployable**: `AgentsInfo` did not resolve in that tenant, so the variant was blocked there for a
+> deployable**: the table did not resolve there, so the variant was blocked for a
 > different reason, and this file's table is the blocker to watch rather than the function.
 > **This is still the only query in the pack meant for deployment that depends on a hashing
 > function, and every other use of one in this pack is a check run once rather than a rule
@@ -287,7 +314,7 @@ deploys one detection may never open the checklist.
 
 Per the same feature page, verbatim: agent observability requires "the Microsoft 365 app connector
 to collect Agent 365 observability data for AI agent actions", and "Agents built with Microsoft
-Copilot Studio, Microsoft Foundry, and declarative agents built with the Microsoft 365 Copilot Agent
+Copilot Studio, Microsoft Foundry, and declarative agents built with the Microsoft Copilot Agent
 Builder send observability data to Microsoft 365 by default." For the rest, verbatim from a re-read
 of the same page on 2026-08-18: "For AI agents built on other platforms, enable observability using
 the Microsoft Agent 365 SDK, as described in the Agent 365 development lifecycle documentation."
@@ -390,9 +417,12 @@ the Microsoft Agent 365 SDK, as described in the Agent 365 development lifecycle
 7. **Before scheduling the change-detection variant, settle its two open questions.** First, confirm
    `hash_sha256()` runs in Defender XDR advanced hunting at all: `print H = hash_sha256("test")`.
    Run it in the Defender portal specifically, because that is where this variant would be
-   scheduled. **The 2026-08-24 lab run ran exactly that statement there and it returned the expected
-   SHA-256 digest**, so this question has an answer for one tenant on one date; run it in yours
-   rather than inheriting that one. Second, measure how much the fingerprint moves on its own:
+   scheduled. **The 2026-08-24 run ran exactly that statement there and it returned a
+   64-character hexadecimal digest**. That function's reference page describes its return as a hex
+   string and states no length, and no published value was matched against it. So this question has
+   an answer for one tenant on one date; run it in yours rather than inheriting that one. Second,
+   measure how much
+   the fingerprint moves on its own:
    `AgentsInfo | where Timestamp > ago(30d) | extend F = hash_sha256(tostring(McpServers))
    | summarize Fingerprints = dcount(F), Rows = count() by AgentId | order by Fingerprints desc`.
    An agent showing many distinct fingerprints over many rows is changing something inside
@@ -404,13 +434,15 @@ the Microsoft Agent 365 SDK, as described in the Agent 365 development lifecycle
 ## Sources
 
 - [AgentsInfo table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-agentsinfo-table) - last verified 2026-08-15
-- [Detect and investigate threats to AI agents using Microsoft Defender (Preview) (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/security-for-ai/ai-agent-detection-protection) - last verified 2026-08-15
+- [Detect and investigate threats to AI agents using Microsoft Defender (Preview) (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/security-for-ai/ai-agent-detection-protection) - last verified 2026-08-15, **re-read 2026-09-20, when the rendered "Last updated on" date read 2026-09-03**, and Microsoft's name for the product in the observability sentence quoted above read `Microsoft Copilot Agent Builder` rather than the form this file carried before that read. **The page's `ms.date` read 2026-08-07 on that same read**, so the two fields disagree here and the date above is the rendered one
 - [Advanced hunting schema tables (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-schema-tables) - last verified 2026-08-15, for the `AIAgentsInfo` listing noted above
 - [`isempty()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/isempty-function) - last verified 2026-08-15, for the empty-`dynamic` behaviour the query predicate works around, and re-read 2026-08-19 for the published example table quoted above. **Each date is kept rather than collapsed**, because each later read is what added the material recorded against it
-- [`in` operator (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/in-cs-operator) - last verified 2026-08-15, for the case sensitivity of the `in` family and for the `!in~` form this file's filters use. **This is deliberately not the same page MSD-004 cites for `!in~`**: each operator in the family has its own reference page, and the two files cite different ones because they ship different forms. This file's filters put `!in~` over a parenthesised scalar list, which is the form the comparison shared across the `in` pages documents; MSD-004 ships `!in~` over a `dynamic([...])` right-hand side, which is documented on `!in~`'s own page and cited there
+- [`in` operator (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/in-cs-operator) - last verified 2026-08-15, for the case sensitivity of the `in` family
+- [`!in~` operator (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/not-in-operator) - last verified 2026-08-15, **re-read 2026-09-20**, for its "List of scalars" section, which exemplifies the parenthesised scalar list this file's filters put behind `!in~` and publishes its own output. **MSD-004 cites this same page for a different section of it**: that file ships `!in~` over a `dynamic([...])` right-hand side, exemplified in the "Dynamic array" section, including the `let`-bound variant. **Both forms sit on this operator's own page**, so the two files cite one page for two sections rather than two different pages. An earlier version of this entry cited the case-sensitive `in` page for the `!in~` form and said that form was documented only in the comparison table shared across the `in` pages; **that was wrong**, and MSD-004's own entry for this page recorded the "List of scalars" section all along
 - [`tostring()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/tostring-function) - last verified 2026-08-16, for the coercion step and the null case
 - [`array_length()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/array-length-function) - last verified 2026-08-16, for the null-on-non-array behaviour that rules it out here
 - [`hash_sha256()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/hash-sha256-function) - last verified 2026-08-16, for the function the change-detection variant uses
+- [`arg_max()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/arg-max-aggregation-function) - read 2026-09-20, for the Returns statement that it "Returns a row in the table that maximizes the specified expression", which is what makes the baseline leg hold each agent's last state in the window rather than every state seen in it, and what makes the `distinct` after it a no-op as that leg stands. **This page was argued from in this file before it was cited**, which the entry records rather than leaves as a gap
 - [Advanced hunting overview (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-overview) - last verified 2026-08-16, for the 30-day query date range and how a Microsoft Sentinel workspace extends it
 - MITRE ATLAS technique IDs read from the distributed `atlas-data` dataset, `version: 5.6.0` (release tag `v2026.07`) - verified 2026-08-15
 - OWASP Top 10 for LLM Applications item numbering carried from the companion capability-status matrix cross-walk, verified there by SHA-256 against OWASP's published download on 2026-08-09; the 2026 edition and its publication date re-confirmed 2026-08-15

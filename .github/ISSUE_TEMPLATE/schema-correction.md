@@ -100,10 +100,15 @@ Choose one and complete it.
 
   **The workspace-type field is optional, and here is why you might leave it blank.** A report from
   an identifiable account saying a named detection is wrong **in production** is a public statement
-  about your organisation's monitoring. This repository is careful not to disclose its author's
-  security posture and it will not ask you to disclose yours. Report from a personal account, leave
-  it blank, or use the private route in [`SECURITY.md`](../../SECURITY.md) - a correction with it
-  blank is still the most valuable issue this repository receives.
+  about your organisation's monitoring. This repository does not identify the environments its own
+  author ran against, and it will not ask you to identify yours. **It does publish, of its own runs,
+  which detections could not resolve their table or a column, what shape a function returned, which
+  serialisation a column emitted, and a value a tenant emitted where no page this pack cites
+  publishes one**, so take the reassurance as being about identification rather than about outcomes.
+  [`docs/scope-and-out-of-scope.md`](../../docs/scope-and-out-of-scope.md) sets out that class, and
+  this sentence restates it. Report from a personal account, leave it blank, or use the private
+  route in [`SECURITY.md`](../../SECURITY.md) - a correction with it blank is still the most
+  valuable issue this repository receives.
 
 - [ ] **The citation URL is dead or redirects.**
 

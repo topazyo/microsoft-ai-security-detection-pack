@@ -5,7 +5,7 @@
 | **ID** | MSD-008 |
 | **Deployment target** | Microsoft Defender XDR advanced hunting |
 | **Primary table** | `BehaviorInfo` |
-| **Status** | **Public Preview**, and **not available for GCC**. The AI-agent value set is **Provisional**. |
+| **Status** | **Public Preview**, and **not available for GCC**. Two elements are **Provisional**: the AI-agent value set, and the `Categories` serialisation. |
 | **Last verified** | 2026-08-15 |
 | **MITRE ATLAS** | `AML.T0051` LLM Prompt Injection · `AML.T0054` LLM Jailbreak |
 | **OWASP LLM 2026** | LLM01:2026 Prompt Injection |
@@ -51,14 +51,21 @@ stamp 2026-01-12). Page title: **`BehaviorInfo (Preview)`**.
 > canonical legend. MSD-007 is the pack's one Requires-further-validation row, and keeping that label
 > for the conflicting-sources case is what makes it worth anything.
 
-> **Lab outcome, 2026-08-24: one tenant's `BehaviorInfo` schema did not carry `Title`.** Microsoft
+> **Provisional: `Categories` has no published value format, and one environment returned a
+> serialised array string rather than a bare name.** Microsoft types the column and publishes no
+> format for it. Step 1 groups by this column, so the inventory it returns may be a set of
+> combinations rather than of category names, and an equality filter built from one of them matches
+> only the rows carrying that exact combination. **One environment's answer on one date is not
+> yours**; record the shape you find.
+
+> **Outcome, 2026-08-24: one tenant's `BehaviorInfo` schema did not carry `Title`.** Microsoft
 > Learn publishes the column, re-read 2026-08-24 and quoted verbatim in the table above, so this is
 > a difference between what Learn documents and what one workspace returned rather than a
 > transcription error here. **All three queries this file shipped for deployment referenced `Title`
 > and failed to resolve it there.** **Step 1 names it again behind `column_ifexists()`, which returns
 > `Description` where the column is absent; step 2 and the self-check wrapper name it nowhere.** The
 > column stays in the table because Learn publishes it, and verification step 1 is what tells you
-> whether your own tenant carries it. **Re-checked 2026-08-26 in the same lab tenant, on Defender XDR
+> whether your own tenant carries it. **Re-checked 2026-08-26 in the same tenant, on Defender XDR
 > advanced hunting: the column was still absent, and the guarded step-1 query ran and returned rows
 > there.** **What that run does not tell you is why.** The table is in preview, and Learn
 > states: "If your organization doesn't deploy these services in Microsoft Defender, queries that use
@@ -102,7 +109,7 @@ products every Kusto reference page names, so this file makes no claim either wa
 function is available in Defender XDR advanced hunting, which is the ground this pack applies to
 every other Kusto function it uses there. **The residual this shape carried is closed by a run.**
 That page exemplifies the function under `project` and not inside an aggregation, so the shape this
-query ships is unexemplified there. **On 2026-08-26, in one lab tenant, this query ran on Defender XDR
+query ships is unexemplified there. **On 2026-08-26, in one tenant, this query ran on Defender XDR
 advanced hunting and returned rows, against a table whose schema did not carry `Title` on that date.**
 So it parses in that position and the fallback is what you get. **That settles the shape and not
 availability**, and it is one tenant on one date.
@@ -205,7 +212,7 @@ the checklist.
 > page: the `in` page's worked example binds a `let` for the case-sensitive operator, and the `in~`
 > page passes its literal directly. Section 6 of
 > [`docs/verification-methodology.md`](../../docs/verification-methodology.md) states that residual.
-> **Mode 1 was settled in a lab on 2026-08-24, in one tenant, on both surfaces.** A `dynamic([...])`
+> **Mode 1 was settled on 2026-08-24, in one tenant, on both surfaces.** A `dynamic([...])`
 > literal whose only element is a comment on its own line parsed, `array_length()` over it returned
 > zero rather than null, and `in` and `in~` over it both returned false. The one-element control
 > passed first on each surface, so the reading is live. **That answer came from one tenant on one
@@ -246,7 +253,7 @@ the checklist.
 > the result to have all the columns that occur in any of the inputs", that "Cells that aren't
 > defined by an input row are set to `null`", and that "The default is `outer`". So the shape
 > mismatch above is expected to widen the result rather than to fail, on the page rather than on
-> assumption. **Whether these two legs parse together was settled on 2026-08-26**, in one lab tenant:
+> assumption. **Whether these two legs parse together was settled on 2026-08-26**, in one tenant:
 the wrapper ran on Defender XDR advanced hunting and returned a row carrying `RuleState`. **The
 2026-08-24 run had settled the construct and not the combination**, because the wrapper did not run
 there at all, having referenced `Title`. Removing that reference is what let the pair be tested.
@@ -257,7 +264,7 @@ there at all, having referenced `Title`. Removing that reference is what let the
 > branch as `let Unconfigured = view () { print RuleState = "RULE UNCONFIGURED ..." };` and then using
 > `(Unconfigured | where array_length(AgentProtectionActionTypes) == 0)` as the second leg puts the
 > same behaviour on a shape that page shows. **That form has not been parsed here either**, and the
-2026-08-24 lab run did not test it, and it
+2026-08-24 run did not test it, and it
 > does not change the `array_length()` problem below, which is what decides whether the branch fires
 > at all.
 >
@@ -266,7 +273,7 @@ there at all, having referenced `Title`. Removing that reference is what let the
 > literal whose parse mode 1 settled above. The `array_length()` reference states it
 > "Returns the number of elements in array, or `null` if array isn't an array", which is exactly why
 > MSD-003 and MSD-004 both decline to use it - and `null == 0` does not evaluate true. **So if that
-> literal parses to anything that is not an array, branch 2 does not fire. On 2026-08-26, in one lab
+> literal parses to anything that is not an array, branch 2 does not fire. On 2026-08-26, in one
 > tenant, it did fire**: the wrapper returned its unconfigured row on that surface, and that row is
 > the observable saying the literal parsed to an array and the guard compared a length rather than a
 > null. **One tenant, one date, and it does not replace the check in yours.** What the union returns
@@ -276,7 +283,7 @@ there at all, having referenced `Title`. Removing that reference is what let the
 > exactly the silent-empty state it was added to prevent**, and that is the case to rule out rather
 > than to assume either way. Group 1b check 2
 > already answers this and nothing new is needed: its `ArrayLength` column is the result to read.
-> **It came back `0` rather than `null` in the 2026-08-24 lab run, on both surfaces**, so branch 2
+> **It came back `0` rather than `null` in the 2026-08-24 run, on both surfaces**, so branch 2
 > could fire there. If
 > it comes back `null` rather than `0` in your own workspace, do not deploy this wrapper in this
 > shape - use the plain step-2 query and the comment, and rely on the value set being filled.
@@ -337,7 +344,7 @@ this table**, and a GCC environment has neither.
   with alerts during investigation." That page is titled "… (Preview)" and states "This feature is
   currently in public preview."
 - The same page carries a coverage note, verbatim: "Block events from Microsoft Prompt Shields for
-  Foundry and Microsoft 365 Copilot Agent Builder are also recorded as behaviors. This isn't yet
+  Foundry and Microsoft Copilot Agent Builder are also recorded as behaviors. This isn't yet
   supported for agents built with Microsoft Copilot Studio."
 
 That last quote is the operationally important one: **Copilot Studio agents are named as not yet
@@ -406,7 +413,12 @@ covers less of it than the table's presence suggests.
    table does not is not a mismatch**, because the schema table is a deliberate subset. Then
    `BehaviorInfo | take 10`. Confirm your environment is not GCC.
 2. Run the step-1 discovery query over the **full retention window** and record the complete
-   `ActionType` / `ServiceSource` / `DetectionSource` / `Categories` inventory. Thirty days is a
+   `ActionType` / `ServiceSource` / `DetectionSource` / `Categories` inventory. **`Categories` came
+   back as a serialised array string in one environment**, so the values this rollup returns for
+   that column may be combinations rather than category names. **Record them as the shape you
+   found, and do not build an equality filter from one**: such a filter matches only the rows
+   carrying that exact combination and silently misses every other combination containing the same
+   category. Thirty days is a
    ceiling here rather than a floor: the advanced hunting overview states "Each query can look up
    native Defender XDR data from up to the past 30 days", and extends that range only where a
    Microsoft Sentinel workspace is onboarded and its analytics-tier retention is longer. Confirm which
@@ -425,7 +437,7 @@ covers less of it than the table's presence suggests.
    printed there, and record the result. It decides which of the two query shapes is safe to deploy.
    **If you intend to use the self-check wrapper, run checklist Group 1b check 3 as well** - it
    tests whether a `print` statement works as a leg of a `union`, which is the wrapper's other
-   construct. **The 2026-08-24 lab run parsed it on both surfaces**, in the same-shape form that
+   construct. **The 2026-08-24 run parsed it on both surfaces**, in the same-shape form that
    check ships, which is not the wrapper's two-shape pair.
 4. Generate a known AI-agent protection event in a lab tenant and locate it in the step-1 output.
    Without a positive control you cannot distinguish "no events" from "wrong filter".
@@ -435,7 +447,9 @@ covers less of it than the table's presence suggests.
    than for its status. **Both status questions are already settled against that reference**, quoted
    in the entity-join note above: the table is in preview, and it is not available for GCC at the
    table level, so the answer you recorded in step 1 carries over to it. What the reference is for
-   here is the columns a join would return, none of which this pack has seen in a workspace.
+   here is the columns a join would return. **One run resolved the table and recorded three of its
+columns**; nothing further about it has been checked against a
+workspace.
    **The concrete question to take to it is attribution.** Run the join in a lab tenant against a
    behaviour you generated in step 4, and record what its entity-type and entity-role columns carry
    for an agent-initiated behaviour. That is the one thing that would close the limit stated above,
@@ -443,10 +457,10 @@ covers less of it than the table's presence suggests.
 
 ## Sources
 
-- [BehaviorInfo table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-behaviorinfo-table) - last verified 2026-08-15, **re-read 2026-08-24** after one lab tenant's schema did not carry `Title`. That read confirmed the column is still published, quoted verbatim in the schema table above, and is also the source of the sentence that the table is populated from Defender for Cloud Apps and UEBA, and of the deployment sentence beginning "If your organization doesn't deploy these services in Microsoft Defender", which is quoted in full where it is used rather than paraphrased into a condition the page does not state. Page stamp on that read: `ms.date` 2026-01-12, `updated_at` 2026-06-14
+- [BehaviorInfo table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-behaviorinfo-table) - last verified 2026-08-15, **re-read 2026-08-24** after one tenant's schema did not carry `Title`. That read confirmed the column is still published, quoted verbatim in the schema table above, and is also the source of the sentence that the table is populated from Defender for Cloud Apps and UEBA, and of the deployment sentence beginning "If your organization doesn't deploy these services in Microsoft Defender", which is quoted in full where it is used rather than paraphrased into a condition the page does not state. Page stamp on that read: `ms.date` 2026-01-12, `updated_at` 2026-06-14
 - [Advanced hunting schema tables (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-schema-tables) - last verified 2026-08-18, for the `BehaviorEntities` preview tag, and for where the GCC qualifier sits on that row
 - [BehaviorEntities table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-behaviorentities-table) - last verified 2026-08-19, for the table description quoted in the entity-join note above, for its verbatim table-level preview and GCC statement, and for the absence of any agent identifier in its published column list, which is recorded under what this detection cannot see. **This pack ships no join against this table**, so the entry records what was read rather than a column this pack relies on
-- [Detect and investigate threats to AI agents using Microsoft Defender (Preview) (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/security-for-ai/ai-agent-detection-protection) - last verified 2026-08-15 for the real-time-protection sentence and the Copilot Studio coverage note quoted under Status evidence, and re-read 2026-08-19 for the `BehaviorEntities` row of its advanced-hunting table list, quoted in the entity-join note above, and re-read again 2026-08-23 for the `CloudAppEvents` row of that same table list, which is where the quotation in the scope note above sits. **Each date is kept rather than collapsed**, because the later read is what added that row
+- [Detect and investigate threats to AI agents using Microsoft Defender (Preview) (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/security-for-ai/ai-agent-detection-protection) - last verified 2026-08-15 for the real-time-protection sentence and the Copilot Studio coverage note quoted under Status evidence, **re-read 2026-09-20, when the rendered "Last updated on" date read 2026-09-03 and the page's `ms.date` read 2026-08-07**, and the product name in that coverage note read `Microsoft Copilot Agent Builder` rather than the form this file carried before that read. The Copilot Studio half of the note was unchanged on that read, and re-read 2026-08-19 for the `BehaviorEntities` row of its advanced-hunting table list, quoted in the entity-join note above, and re-read again 2026-08-23 for the `CloudAppEvents` row of that same table list, which is where the quotation in the scope note above sits. **Each date is kept rather than collapsed**, because the later read is what added that row
 - [`in` operator (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/in-cs-operator) - last verified 2026-08-15, which documents dynamic-array expansion and the `in` / `in~` case-sensitivity pair
 - [`in~` operator (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/in-operator) - last verified 2026-08-18, for the "Dynamic array" section, whose example passes a `dynamic([...])` literal directly to `in~` and publishes its output. It does not exemplify the `let`-bound form this file's step-2 query and self-check wrapper ship, and the `let` variant beside it substitutes another operator; [`docs/verification-methodology.md`](../../docs/verification-methodology.md) section 6 states what that leaves open
 - [`column_ifexists()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/column-ifexists-function) - last verified 2026-08-25, for the syntax `column_ifexists(columnName, defaultValue)`, for both arguments being required, for the default column being returned where the named column does not exist, and for the deprecated alias `columnifexists()` this file does not use. **This is the page step 1's `Title` guard rests on.** Its "Applies to" line names the same four products every Kusto reference page names, so it settles the syntax and not whether the function is available in Defender XDR advanced hunting, and its one worked example applies the function under `project` rather than inside an aggregation

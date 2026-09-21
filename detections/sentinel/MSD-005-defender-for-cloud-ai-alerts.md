@@ -342,12 +342,23 @@ checklist.
   template per Microsoft source solution. **The page prints the separator inside that section name as
   an en dash and this file reproduces it as a hyphen**, which is a transcription difference rather
   than a different name. Either run this as a **hunting query** rather than an analytics rule, or
-  configure alert grouping against `SystemAlertId` before enabling it. This detection adds
-  correlation, not detection.
+  **deploy it as an analytics rule with incident creation turned off and triage from the alerts.**
+  This detection adds correlation, not detection.
+
+  > **Correction, 2026-09-19.** An earlier version of this bullet offered alert grouping against
+  > `SystemAlertId` as the alternative. **That does not solve the problem stated.** The duplication
+  > described is across two rules, and alert grouping is configured per analytics rule and groups the
+  > alerts that rule produces, so it cannot merge its incident with one created by a Microsoft
+  > incident creation rule. `SystemAlertId` is also unique per source alert, so grouping on it is the
+  > setting that most reliably produces one incident per alert rather than suppressing one.
+  > **The replacement is reasoned from the product's per-rule incident setting and has not been
+  > exercised here**, and the duplicate-incident question stays recorded as not completed.
+  > **A rule with incident creation off puts nothing in the incident queue**, so
+  > triage means the alert queue or a `SecurityAlert` query.
 
   > **Correction, 2026-08-24.** An earlier version of this bullet said that no page this file cites
   > publishes a label for the control. The page cited for it publishes two, and both are named
-  > above. `CHANGELOG.md` records the correction under 2026-08-24.
+  > above.
 - **Duplicate ingestion.** If both a Defender for Cloud connector and a tenant-based Defender
   connector are enabled, confirm you are not counting the same alert twice.
 

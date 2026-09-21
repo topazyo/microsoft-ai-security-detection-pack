@@ -113,8 +113,7 @@ GitHub holds the advisory itself under its own terms, which are not this reposit
 report is kept while the correction it drives is being made, and closed afterwards. **If you want it
 deleted once the correction ships, say so and it will be** - and you do not have to give a reason.
 
-**What that promise reaches, and what it does not, because the referent is the object named two
-sentences above as not this repository's to set.** It reaches what the maintainer controls: your
+**What that promise reaches, and what it does not.** It reaches what the maintainer controls: your
 request is acted on with whatever controls the platform provides, and no separate copy of your report
 is kept anywhere else. **It does not reach what GitHub retains on its own systems afterwards**, which
 falls under those same terms, and **no page this file cites settles that either way** - this file

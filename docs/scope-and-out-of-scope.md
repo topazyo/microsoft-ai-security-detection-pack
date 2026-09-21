@@ -44,8 +44,11 @@ set a status here.
 
 ### Tenant-specific content of any kind
 
-No captured telemetry, no screenshots, no sample data drawn from a real environment, no
-environment-specific values in any query.
+No captured telemetry, no screenshots, no sample data drawn from a real environment, and no
+environment-specific values in any query **except the single member of the observed-value class**
+that [`verification-methodology.md`](verification-methodology.md) section 1 names. That one value
+is labelled as observed at both of the points where a query uses it, which is the condition the
+class carries; nothing else of the kind ships here.
 
 ### Detections on tables verified only partially
 
@@ -114,8 +117,9 @@ Two surfaces were read during this pass and deliberately not built on:
 
 - **`BehaviorEntities`.** Named by Microsoft as a companion to `BehaviorInfo`, and named in MSD-008
   for that reason. Its reference page was read for the table's description and status, which MSD-008
-  quotes. **No query here joins to it, and nothing it publishes has been checked against a
-  workspace**, which is what "verified only partially" means for this table.
+  quotes. **No query here joins to it.** Its published column set has been checked against a
+  workspace once, in one environment, and three columns were read; nothing further about it has
+  been, which is what "verified only partially" means for this table.
 
 ### Automated deployment tooling
 
@@ -182,21 +186,38 @@ Built entirely from public primary sources. **Never include** in this repository
 - IP addresses, hostnames
 - tenant, workspace, or subscription GUIDs
 - user names or email addresses
-- captured logs, telemetry, or query results from a real environment
+- captured logs, telemetry, or result rows and counts from a real environment
 - screenshots of any kind
 - real incident details
 - vendor evaluation findings, commercial details, licence counts, or cost data
 - undisclosed security gaps or policy exceptions
 - material under NDA, or from a Microsoft preview programme that is not publicly documented
 
+**Run outcomes are not on that list, and the omission is deliberate rather than an oversight.**
+What a run established is published throughout this pack: whether a table or a column resolved,
+what shape a function returned, which serialisation a column emitted, and a value a tenant emitted
+where no page this pack cites publishes one. **That is a class of its own and it is not a result
+row, a row count, or anything inside one**, which is what the bullet above bars. It is published
+because the hedges in every detection file rest on it and because the release gate is stated in
+terms of it. **It is not the only thing here that describes the author's own environment rather
+than a reader's**: `docs/verification-methodology.md` sets out an observed-value class that a
+shipped query acts on, and reports further values a tenant emitted that no query acts on.
+
+**The asymmetry the issue templates set out is about identification, not about outcomes.** This
+pack does not identify any environment it ran against and it does not ask a contributor to identify
+theirs. **It does ask a contributor for outcomes about their own environment**, directly and in the
+forms: whether a query ran, whether a table or a connector or a plan was there, and which
+serialisation a column emitted. `.github/ISSUE_TEMPLATE/workspace-verification-report.md` states
+the same point where a contributor meets it.
+
 **The rule about example values is stated here as a property rather than as a list of sites**, because
-a list of sites goes stale on the next query edit and because this one did. **No example value
+a list of sites goes stale on the next query edit. **No example value
 anywhere in this pack carries anything from anyone's environment, and that property is what the
 boundary rests on** rather than any count of where the literals sit.
 
-The classes those values fall into are set out below rather than summarised, because an earlier
-version of this paragraph asserted three classes and this pack ships values that sit in none of
-them. **Each class is tagged twice**: whether it sits inside the rule in
+The classes those values fall into are set out below rather than summarised, because a summary would
+fix their number and this pack ships values that sit outside any fixed set of classes. **Each class
+is tagged twice**: whether it sits inside the rule in
 [`verification-methodology.md`](verification-methodology.md) section 1, which is what that section's
 pointer here is about, and whether an inbound contributor may send one, which is what the
 contribution templates' example-value attestation is about. **Those are different questions**, and
@@ -263,5 +284,5 @@ the test, which is the canonical copy**, and if the two ever differ the checklis
 | `CloudAppEvents` agent `ActionType` values become documented, or a workspace pass enumerates them | An agent tool-invocation detection |
 | Microsoft resolves the Sentinel connector labelling conflict | MSD-007's status label moves off Requires further validation, and its existing access-anomaly query becomes defensible to *schedule* rather than to run once |
 | A documented hunting surface for Copilot chat prompts appears | A new detection lane, and a correction to the README's opening claim |
-| The `BehaviorEntities` schema is verified **against a workspace**, which reading its reference page does not do and which has not happened | An entity join in MSD-008 |
+| The `BehaviorEntities` schema is verified **against a workspace** beyond the single column-set reading one run recorded, and a join is exercised against a generated behaviour | An entity join in MSD-008 |
 | The workspace verification pass finds a schema mismatch | A citation correction, which ranks above any new detection |

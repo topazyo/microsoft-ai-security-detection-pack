@@ -184,43 +184,43 @@ makes step 2 stop excluding. Step 1 is what tells you the casing your own tenant
 more reason to run it first and to read its `RecordType` inventory before deploying either.
 
 **What every query in this file returns stays in your environment, and none of it is `LLMEventData`,
-which the workspace verification section handles separately.** Step 3
-and the access-pattern view group named actor principals beside a set of client network addresses,
-which are two of the categories this pack's own exclusion list names, materialised side by side.
-**Step 2 is the query this file tells you to deploy, and it carries more than either rollup does**:
-it projects those same actor principals and client addresses one row at a time rather than grouped,
-and adds the client region, the application identity, the record identifier, the agent name and the
-AI model name, so a single row of
-its output identifies more than a whole row of either rollup. **`AgentName` is free text on the
-pack's own test**: Learn describes it as a friendly readable name of the agent and publishes no value
-set for it, so the value is a name from your own estate rather than a class the platform assigns, and
-what travels from it is the column name and the shape rather than the contents. MSD-003 and MSD-004
-apply the same reasoning to the same-named column in `AgentsInfo`. **That classifies `AgentName` and
-nothing else here**; the note on `AgentId` above stands unchanged. **The rule governs step 1 as much as
-the rest**, and step 1 is the step a reader is most likely to think it does not, because its output
-reads as an inventory rather than as rows: its event and distinct-actor figures are counts, and its
-first-seen and last-seen timestamps are estate data in the same way, so all four stay with you.
-**What travels from this file is a closed list: the `RecordType`, `Workload` and `AppHost` value
-strings step 1 reports, which are the three the checklist's Group 7 step asks you to record and
-compare, together with the `RecordType` and field names verification step 3 permits from
-`LLMEventData`, and nothing else.** Learn enumerates none of those columns' values, which is why the
-inventory is worth having and why the value names rather than the figures beside them are the
-contribution. **`AppHost` goes out under the checklist's condition for a column with no published
-value list rather than as a plain value name**: Learn describes it as the application that hosts
-copilot and settles neither way whose applications it names, so look at what your own values contain
-before any of them travels, and send the shape rather than the value where they name anything
-specific to your estate, whoever chose the name. **The same condition gives the set its own rule**,
-because a complete inventory of the applications hosting Copilot in your tenant states part of what
-your estate runs even where every member of it passes the per-value test: that inventory stays in
-your environment, and what may travel from this column is an individual value rather than the list
-step 1 reports. The checklist states the per-value test and the set rule in full, under **Recording
-the result**. The list above does not shorten; the condition is what reaches it. **Not `ActorUserType`, which step 1 also groups by** - the checklist's step does not
-ask for it, so nothing here asks you to send it. **That is the reach of this file's permission
-rather than a published prohibition**: Learn illustrates that column's values behind an "e.g."
-exactly as it does `RecordType`'s, so no published distinction separates them. What travels
-outward is a column name or a value name, never a result row, a row count, or anything inside one.
-Checklist Group 0 states the same rule for every step in the pack, and this file repeats it because
-a reader who deploys one detection may never open the checklist.
+which the workspace verification section handles separately.** Step 3 and the access-pattern view
+group named actor principals beside a set of client network addresses, which are two of the
+categories this pack's own exclusion list names, materialised side by side. **Step 2 is the query
+this file tells you to deploy, and it carries more than either rollup does**: it projects those same
+actor principals and client addresses one row at a time rather than grouped, and adds the client
+region, the application identity, the record identifier, the agent name and the AI model name, so a
+single row of its output identifies more than a whole row of either rollup. **`AgentName` is free
+text on the pack's own test**: Learn describes it as a friendly readable name of the agent and
+publishes no value set for it, so the value is a name from your own estate rather than a class the
+platform assigns, and what travels from it is the column name and the shape rather than the
+contents. MSD-003 and MSD-004 apply the same reasoning to the same-named column in `AgentsInfo`.
+**That classifies `AgentName` and nothing else here**; the note on `AgentId` above stands unchanged.
+**The rule governs step 1 as much as the rest**, and step 1 is the step a reader is most likely to
+think it does not, because its output reads as an inventory rather than as rows: its event and
+distinct-actor figures are counts, and its first-seen and last-seen timestamps are estate data in
+the same way, so all four stay with you. **What travels from this file is a closed list: the
+`RecordType`, `Workload` and `AppHost` value strings step 1 reports, which are the three the
+checklist's Group 7 step asks you to record and compare, together with the `RecordType` and field
+names verification step 3 permits from `LLMEventData`, and nothing else.** Learn enumerates none of
+those columns' values, which is why the inventory is worth having and why the value names rather
+than the figures beside them are the contribution. **`AppHost` goes out under the checklist's
+condition for a column Learn gives neither an example nor a value set, rather than as a plain value
+name**: Learn describes it as the application that hosts copilot and settles neither way whose
+applications it names, so look at what your own values contain before any of them travels, and send
+the shape rather than the value where they name anything specific to your estate, whoever chose the
+name. **The same condition gives the set its own rule**, because a complete inventory of the
+applications hosting Copilot in your tenant states part of what your estate runs even where every
+member of it passes the per-value test: that inventory stays in your environment, and what may
+travel from this column is an individual value rather than the list step 1 reports. The checklist
+states the per-value test and the set rule in full, under **Recording the result**. The list above
+does not shorten; the condition is what reaches it. **Not `ActorUserType`, which step 1 also groups
+by** - the checklist's step does not ask for it, so nothing here asks you to send it. **That is the
+reach of this file's permission rather than a published prohibition**: Learn illustrates that
+column's values behind an "e.g." exactly as it does `RecordType`'s, so no published distinction
+separates them. What travels outward is a column name or a value name, never a result row, a row
+count, or anything inside one. Checklist Group 0 states the same rule for every step in the pack,
+and this file repeats it because a reader who deploys one detection may never open the checklist.
 
 ### Access-pattern view
 
@@ -258,6 +258,13 @@ CopilotActivity
   data, which MSD-003 quotes from Learn. **Confirm the source in each case before reading an empty
   result as a clean one**, rather than counting how many detections that applies to. Verification
   step 1.
+- **Connector state itself.** No query in this pack reads whether the connector is configured; the
+  table is the only thing these queries see. An empty result therefore does not discriminate a
+  connector that was never deployed from one that is deployed and not producing, and no query here
+  can be made to. **Record "cannot tell" rather than choosing between them** - the checklist treats
+  that as itself the finding - and note that an observation made tenant wide does not settle a
+  question about a single workspace. Verification step 1 is what separates a deployment question
+  from a production question.
 
 ## False-positive guidance
 
@@ -303,6 +310,32 @@ CopilotActivity
    scheduled analytics rule can run against it on that plan.
 5. Make one Copilot settings change deliberately in a lab tenant and confirm it appears with the
    expected `RecordType`. Without a positive control, an empty result is uninterpretable.
+   **If it does not appear, the next question is whether the change was audited at all**, and that
+   one is answered outside Sentinel. Four things govern that search.
+   - **The unified audit log is reachable through Microsoft Graph**, which matters where the
+     Exchange Online module is not available on the machine you are working from:
+     `microsoft.graph.security.auditLogQuery`, which Microsoft describes as "a query against the
+     Microsoft 365 unified audit log", **on the v1.0 endpoint rather than beta**. It takes
+     `filterStartDateTime` and `filterEndDateTime`, with filters including `operationFilters`,
+     `recordTypeFilters`, `keywordFilter` and `serviceFilters`, and it runs as an asynchronous job
+     whose `status` you poll.
+   - **Do not assume access carries across from advanced hunting.** Advanced hunting through Graph
+     is a different endpoint under a different scope, and **this pack's reading is that the audit
+     log query is a separate resource requiring its own permission**. The resource page cited below
+     publishes no permission at all, and the advanced-hunting method page publishes
+     `ThreatHunting.Read.All`; neither states that holding one confers the other. **Confirm the
+     audit grant before you start** rather than part way through.
+   - **Pad the window, and state the timezone you mean.** Audit timestamps are UTC, so a change made
+     near a UTC boundary in local time falls on the adjacent UTC day, and a one day window can
+     return a true zero while the record sits just outside it. Pad by a day on each side, or a
+     boundary artefact is indistinguishable from the absence you are testing for.
+   - **Enumerate the operation names in the window rather than matching on terms.** A term search
+     excludes only what its terms match: a search on two terms says nothing about an operation named
+     with neither, and an operation name need not carry the words the step 3 filter value is built
+     from, since one called simply "Update" would carry none of them. **Note also that the audit log
+     records operation names while step 3 filters on a record type**, which is a mapping this pack
+     infers rather than one Microsoft publishes. Read the list, and give any matcher a control term
+     you know is present in the same set.
 6. Re-read the connector entry on the Sentinel data-connectors reference and record whether the
    page-level-notice versus per-entry-tag conflict still stands. If Microsoft resolves it, this
    row's status label changes.
@@ -313,4 +346,6 @@ CopilotActivity
 - [Find your Microsoft Sentinel data connector (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/sentinel/data-connectors-reference) - last verified 2026-08-15
 - [`==` (equals), case-sensitive (Kusto query reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/equals-cs-operator) - read 2026-08-22 for step 3's case sensitivity
 - [`!=` (not equals), case-sensitive (Kusto query reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/not-equals-cs-operator) - read 2026-08-22 for step 2's case sensitivity
+- [`auditLogQuery` resource type (Microsoft Graph reference, Microsoft Learn)](https://learn.microsoft.com/en-us/graph/api/resources/security-auditlogquery) - read 2026-09-19 for verification step 5's description of the resource and its filter parameters. **Re-read 2026-09-20: the page publishes no permission**, which is why step 5 marks the separate-grant point as this pack's reading rather than as a documented one
+- [`security: runHuntingQuery` (Microsoft Graph reference, Microsoft Learn)](https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery) - read 2026-09-19 for verification step 5's separate advanced-hunting scope
 - MITRE ATLAS technique IDs read from the distributed `atlas-data` dataset, `version: 5.6.0` (release tag `v2026.07`) - verified 2026-08-15

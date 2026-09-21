@@ -19,13 +19,13 @@ on**, as opposed to one it merely reports, is either:
   section or a source line beside the quotation itself; or
 - **marked Provisional or Requires further validation**, with the reason stated and a workspace step
   that resolves it; or
-- **labelled at the point of use as observed in a lab tenant on a stated date rather than as
+- **labelled at the point of use as observed in a tenant on a stated date rather than as
   documented.** **This third class is scoped more narrowly than the sentence above it**, and
   deliberately: it is available to a value **a shipped query acts on**, because that is the value
   that can change what a detection returns without anyone noticing. **Its members are named here
   rather than counted, and there is one**: the `Junk folder`
   spelling in MSD-002's `DeliveryLocation` filter, and in the bucket expression of the rollup below
-  that filter, which a lab tenant emitted on 2026-08-24 and which
+  that filter, which a tenant emitted on 2026-08-24 and which
   Microsoft Learn does not publish. It is kept beside the published spelling so the filter matches
   either, and MSD-002 labels it inside both of its query blocks. **A member of this class may widen a
   filter and may never narrow one**, because an observed value that removed rows would be the silent
@@ -38,7 +38,7 @@ There is no fourth category for anything a shipped query acts on. A column name 
 that appears in a query and is none of the three is a defect - report it.
 
 **Prose is a different matter, and the scope sentence above says so with "relies on rather than
-merely reports".** A detection file may report what a lab tenant emitted, with the tenant-and-date
+merely reports".** A detection file may report what a tenant emitted, with the tenant-and-date
 bound beside it, without that value joining any of the three classes, because nothing in the pack
 acts on it. `Forwarded` and `Unknown` in MSD-002 and `notApplied` in MSD-006 are reported that way.
 **They are named here so the enumeration above is not read as short by three**, and any one of them
@@ -81,6 +81,21 @@ that the author did not check.
 That is the failure this pack is built to avoid, and it is why several queries here are less
 convenient than they could be: the shipped query does not filter on a value Microsoft has not
 published, even when a plausible guess would produce a tidier rule.
+
+**Two further standards this pack holds itself to, both about the ground a conclusion rests on
+rather than about schema.**
+
+**An outcome that is accidentally correct is not evidence.** A conclusion can be right for a reason
+that does not license it, and a reading taken at the wrong scope is the ordinary way that happens.
+Where such a reading is redone at the scope the claim actually needs and the answer does not move,
+what changed is the evidence and not the answer, and the record says so rather than quietly keeping
+the original wording. A conclusion here carries the ground it rests on.
+
+**An estimate this pack disowns in one place cannot be a threshold it relies on in another.** Where
+an interval or a latency is recorded as this pack's own estimate rather than as a figure Microsoft
+publishes, no later claim may lean on it as though it were documented. Elapsed time can make a late
+arrival less likely; it cannot license a claim that something is absent. What licenses an absence
+claim is a search whose scope is stated and whose control fires.
 
 ---
 
@@ -144,11 +159,14 @@ full-text search rather than by reading:
   that enumeration is a Copilot chat-prompt table.**
 
 **Both of those two were re-read on 2026-08-17 and both results are unchanged.** The advanced hunting
-overview still contains zero occurrences of "Copilot" and zero of "prompt", at a page stamp of
-2026-08-07. The schema table list still contains exactly one occurrence of "Copilot", still the
-`AIAgentsInfo` entry and still describing Copilot **Studio** agents in the words quoted above, at a
-page stamp of 2026-07-27; no entry in that enumeration is described as carrying Microsoft 365 Copilot
-user prompts or chat interactions. The re-read is recorded because this is the claim the most rests
+overview still contains zero occurrences of "Copilot" and zero of "prompt", at a rendered "Last
+updated on" date of 2026-08-07. The schema table list still contains exactly one occurrence of
+"Copilot", still the `AIAgentsInfo` entry and still describing Copilot **Studio** agents in the
+words quoted above, at a rendered "Last updated on" date of 2026-07-27. **Both figures were
+re-derived against the live pages on 2026-09-20 and both still reproduce**, and on each of these
+two pages the rendered date and the `ms.date` field agree, so neither figure distinguishes them.
+No entry in that enumeration is described as carrying Microsoft 365 Copilot user prompts or chat
+interactions. The re-read is recorded because this is the claim the most rests
 on, and because a second dated read of the two pages that carry the weight costs nothing. Both reads
 are searches of the page **text**, which is the same instrument as the 2026-08-15 read and is what an
 absence claim of this kind can rest on.
@@ -214,20 +232,19 @@ predicate, or a projected-but-never-filtered column - never by a guess.
 | `Availability` value list | MSD-003, MSD-004 | Describes the column; enumerates no values | Projected, never filtered on |
 | `AgentsInfo` emission cadence | MSD-003, MSD-004 | Not documented at all | 30-day window plus a cadence-measuring verification step |
 | Which `SecurityAlert` column carries the alert identifier | MSD-005 | Column names published with **empty description cells** | Matches on both `AlertName` and `AlertType` |
-| `ConditionalAccessStatus` values | MSD-006 | "Status of all the conditionalAccess policies related to the sign-in" - no value list | Grouped by, never filtered on; operator completes the filter. A lab tenant emitted `notApplied` on 2026-08-24; the page still publishes no value list, so the handling stands |
-| `ResultType` stored values | MSD-006 | Describes semantics ("Success or Failure"), not stored strings | Not filtered on. A lab tenant stored numeric codes rather than the described words on 2026-08-24, which is the one of these three worth reading before you write an equality filter on the column |
-| `Agent` column shape | MSD-006 | One sentence: "Details of agentic sign-in." | Projected, never filtered on. A lab tenant returned a JSON object on 2026-08-24; the page still publishes no shape |
-| `ConditionalAccessPolicies` / `LocationDetails` serialisation | MSD-006 | Typed `string`, with composite descriptions and no published value format | Flagged Provisional; inspect before filtering. A lab tenant returned a JSON array and a JSON object respectively on 2026-08-24; the page still publishes no format, so the label stands |
+| `ConditionalAccessStatus` values | MSD-006 | "Status of all the conditionalAccess policies related to the sign-in" - no value list | Grouped by, never filtered on; operator completes the filter. The page still publishes no value list, so the handling stands |
+| `ResultType` stored values | MSD-006 | Describes semantics ("Success or Failure"), not stored strings | Not filtered on. A tenant stored numeric codes rather than the described words on 2026-08-24, which is the one of these three worth reading before you write an equality filter on the column |
+| `Agent` column shape | MSD-006 | One sentence: "Details of agentic sign-in." | Projected, never filtered on. A tenant returned a JSON object on 2026-08-24; the page still publishes no shape |
+| `ConditionalAccessPolicies` / `LocationDetails` serialisation | MSD-006 | Typed `string`, with composite descriptions and no published value format | Flagged Provisional; inspect before filtering. A tenant returned a JSON array and a JSON object respectively on 2026-08-24; the page still publishes no format, so the label stands |
 | `CopilotActivity.RecordType` full value set | MSD-007 | Two examples behind an "e.g." | Step 2 is an **exclusion**, so a new record type appears without a rule change |
 | `LLMEventData` contents | MSD-007 | "Parsed LLM event data" - no schema | Not read; the file forbids building prompt detection on it |
 | `BehaviorInfo.ActionType` values for AI-agent protection | MSD-008 | "Type of behavior" - no value list | Discovery query first; operator completes the filter |
 | `ServiceSource` / `DetectionSource` values | MSD-008 | Described, not enumerated | Grouped by in discovery, never filtered on |
+| `BehaviorInfo.Categories` serialisation | MSD-008 | Types the column, publishes no value format | Grouped by in discovery, never filtered on; one environment returned a serialised array string, so the rollup keys on combinations |
 
-**Seventeen rows, across eight detections.** The unit is deliberate: this table has one row per
+**Eighteen rows, across eight detections.** The unit is deliberate: this table has one row per
 element-and-handling, so a row covering two columns is one row here and two elements there. Three
-rows do that, which is why the row count and any element count differ. **Do not compress this into
-an element count in reader-facing copy** - the previous version of this section said "four", and
-derived numbers in this pack have a history of drifting away from the files they describe.
+rows do that, which is why the row count and any element count differ.
 
 **How the per-file Provisional counts in the detection headers are derived**, because they are
 counted on a different unit again and will not add up to the row count above. A header count is the
@@ -304,25 +321,27 @@ ID must never be carried over unchanged.
 
 ---
 
-## 6. What verification did NOT include
+## 6. What the runs established, and what verification still does not include
 
 Stated plainly, because the gap is the reason the release gate exists.
 
-- **This author ran the queries in this pack once, on 2026-08-24, in one lab tenant** - a Microsoft
-  Sentinel workspace and Microsoft Defender XDR advanced hunting - and never in production. **No
-  detection was observed firing**, because that run generated no event, so every query remains a
-  schema-verified construction rather than an observed result, and `CHANGELOG.md` records the
-  outcome for each. **The gap that bullet used to name has narrowed and has not closed**: a positive
-  control needs an event generated on purpose, and none was generated.
-- **The KQL has now been run against an engine, on 2026-08-24 and on no other date.** **Each shipped
-  query was submitted on the surface its own file names as its deployment target**, rather than on
-  both, and **submitted is not the same as ran**: three detections' shipped queries did not resolve
-  there, MSD-003's and MSD-004's table and MSD-008's `Title` column, so those queries returned a
-  schema error rather than a result. **The construct checks listed below did not all reach both
-  surfaces either.** Of the five listed, three were checked on both, `hash_sha256()` in Defender XDR
-  advanced hunting only, and fingerprint stability was not reached at all. **Read the five entries
-  below for what each one actually got rather than this sentence for a coverage figure.**
-  `CHANGELOG.md` records the outcome for each detection. Column names and
+- **This author has run the queries in this pack three times, on 2026-08-24, 2026-08-26 and
+  2026-09-11** - against a Microsoft Sentinel workspace and Microsoft Defender XDR advanced hunting.
+  **This pack does not identify any environment it ran against.** **No detection
+  was observed firing**, so every query remains a schema-verified construction rather than an
+  observed result.
+- **The KQL has been run against an engine on 2026-08-24, 2026-08-26 and 2026-09-11.** **Each
+  shipped query was submitted on the surface its own file names as its deployment target**, rather
+  than on both, and **submitted is not the same as ran**. **Two schema failures are on the record
+  and they are not on the same footing**: one table did not resolve on any run this pack records,
+  while one column failed on the first run only and its three deployment queries parsed and ran on
+  a later one. Each detection file records what its own queries did, because that record is what
+  its own hedges rest on.
+  **The construct checks listed below did
+  not all reach both surfaces either.** Of the five listed, three were checked on both,
+  `hash_sha256()` in Defender XDR advanced hunting only, and fingerprint stability was not reached
+  at all. **Read the five entries below for what each one actually got rather than this sentence for
+  a coverage figure.** Column names and
   value strings are still verified against Microsoft Learn rather than against that tenant, and
   parsing is a separate question from being correct. Several constructs were explicitly unverified
   before that run and each is flagged where it is used rather than counted here, because a count is
@@ -345,9 +364,11 @@ Stated plainly, because the gap is the reason the release gate exists.
   - whether `hash_sha256()` runs in Defender XDR advanced hunting, which
     none of the pages this pack read settles either way (MSD-003 and
     Group 1b). **Answered for one tenant on one date, and on the Defender XDR surface only: it ran
-    without error and returned a 64-character hexadecimal digest**, which is the shape the function's
-    own reference page describes. **No comparand is published for that check and none is asserted
-    here**: the cited page carries worked digests for other inputs, not for the string this pack's
+    without error and returned a 64-character hexadecimal digest**. That function's reference page
+    describes its return as a hex string and states no length; the length is the one every digest
+    in that page's own worked examples carries. **No comparand is published for that check and none
+    is asserted here**: the cited page carries worked digests for other inputs, not for the string
+    this pack's
     statement hashes, so what the run establishes is that the function resolved and returned a digest
     of the documented shape rather than that any particular value came back. The pages
     still settle nothing, which is why the entry stays here rather than moving to a cited claim.
@@ -365,8 +386,9 @@ Stated plainly, because the gap is the reason the release gate exists.
     the reading on which the terms match while separated**, which is the residual that test's own
     table names.
 
-  **Every answer above came from one tenant on one date**, which is a weaker thing than a documented
-  guarantee and a stronger thing than the reasoning it replaced.
+  **Every answer above came from one tenant, and each from the one or two dates named against it**,
+  which is a weaker thing than a documented guarantee and a stronger thing than the reasoning it
+  replaced.
 
   **One inference this pack does not draw, stated because it is available and wrong.** Kusto
   reference pages carry an "Applies to" line naming Microsoft Fabric, Azure Data Explorer, Azure
@@ -376,7 +398,7 @@ Stated plainly, because the gap is the reason the release gate exists.
   on all five inside Defender XDR queries. **Its silence about a product therefore carries no information about whether a
   function is available there.** Reading it as availability would be an absence argument of exactly
   the kind section 3.2 above holds to a higher bar: an absence carries weight only where the source
-  enumerates the class being inferred about, under a heading that says so. **The 2026-08-24 lab run
+  enumerates the class being inferred about, under a heading that says so. **The 2026-08-24 run
   bears this out for one function.** `hash_sha256()` ran in Defender XDR advanced hunting, and its
   own reference page's "Applies to" line names Microsoft Fabric, Azure Data Explorer, Azure
   Monitor and Microsoft Sentinel, and does not name Defender XDR at all - read 2026-08-25, and that
@@ -417,7 +439,8 @@ Stated plainly, because the gap is the reason the release gate exists.
   ASCII-text. For non-ASCII comparison, use the `tolower()` function", which reaches MSD-006 and
   MSD-008 among the three named above, where the values are ones you paste by hand rather than the
   empty forms this pack enumerates, **and reaches MSD-002 as well**, whose `DeliveryLocation` filter
-  this pass moved to `in~` over hand-transcribed value names. And its performance guidance is "When possible, use the case-sensitive `in`", which
+  uses `in~` over hand-transcribed value names. And its performance guidance is "When possible, use
+  the case-sensitive `in`", which
   the string-operators page gives as "Use `in`, not `in~`" - **a cost this pack trades away
   deliberately**, because a casing mismatch returns nothing and says nothing, while the cost of the
   case-insensitive operator is speed.
@@ -426,14 +449,15 @@ Stated plainly, because the gap is the reason the release gate exists.
   predict what a reader's environment will contain, and some of those carry a frequency word -
   "usually", "commonly", "often", "probably". **Read every one of them as a hedged design
   expectation reasoned from what Microsoft documents about the column, and none of them as an
-  observed rate**. The 2026-08-24 lab run does not change that: it generated no event, measured no
-  frequency, and recorded no count beyond whether a query returned anything at all, so nothing in it
-  turns any of these words into a measurement. Where a frequency word appears
+  observed rate**. **None of the three runs changes that.** No run measured a frequency or recorded
+  a count beyond whether a query returned anything at all, so nothing in any
+  of them turns any of these words into a measurement. Where a frequency word appears
   inside quoted Microsoft text it is Microsoft's, not this pack's.
-- **No positive control has been demonstrated, for any detection.** Strictly, none of the eight can
-  separate "your environment is clean" from "your filter is wrong" without one, **so the absence of
-  one is not what picks out a subset.** The five where the gap is widest - **MSD-003, MSD-004,
-  MSD-005, MSD-007 and MSD-008** - are named as a judgement about how much else a reader has to fall
+- **No positive control has been observed firing, for any detection.** Strictly, none of the eight
+  can separate "your environment is clean" from "your filter is wrong" without one that fires,
+  **so the absence of one is not what picks out a subset.** The five where the gap is widest -
+  **MSD-003, MSD-004, MSD-005, MSD-007 and MSD-008** - are named as a judgement about how much else
+  a reader has to fall
   back on when the result is empty, and not derived from a rule. **This paragraph is the canonical
   statement of that judgement.** The README, the checklist, `disclaimer.md` and the CHANGELOG each
   restate it; if any of them ever disagrees with this one, this one governs, and the difference is a
@@ -446,7 +470,7 @@ Stated plainly, because the gap is the reason the release gate exists.
   discovery-first, which is the weakest of the three positions and is stated here rather than
   smoothed over. MSD-001, MSD-002 and MSD-006 sit on GA surfaces where an empty result is more
   readily interpretable, **and the 2026-08-24 run showed the limit of that**: MSD-002's filter as
-  shipped matched nothing in one lab tenant, and an empty result of that kind reads as a clean estate
+  shipped matched nothing in one tenant, and an empty result of that kind reads as a clean estate
   on a GA surface exactly as it would on any other. None of the eight has been observed firing.
 
   **Three detections ship a discovery query first: MSD-006, MSD-007 and MSD-008**, and only MSD-006
@@ -456,11 +480,13 @@ Stated plainly, because the gap is the reason the release gate exists.
 - **`BehaviorEntities` is cited but not relied on, and the distinction matters.** Its reference page
   was read for this pack on 2026-08-19, and MSD-008 quotes that page for the table's description and
   for its table-level preview and GCC status. **What was not done is a workspace pass:** no query
-  here joins to that table, and nothing it publishes has been checked against a workspace. **The
-  reason MSD-008 cannot attribute a behaviour to an agent is separate from that**, and it is not a
-  gap in this pack's reading: neither `BehaviorInfo` nor the `BehaviorEntities` reference **documents
-  a column as carrying an agent identifier.** That is a statement about what the two pages document
-  and not about what a join returns at runtime, which nothing here has observed.
+  here joins to that table. **Its published column set has since been checked against a workspace
+  once, in one environment, and three of its columns were read**; what those columns carry for an
+  agent-initiated behaviour has not been checked and needs a generated behaviour.
+  **The reason MSD-008 cannot attribute a behaviour to an agent is separate from that**, and it is
+  not a gap in this pack's reading: neither `BehaviorInfo` nor the `BehaviorEntities` reference
+  **documents a column as carrying an agent identifier.** That is a statement about what the two
+  pages document and not about what a join returns at runtime, which nothing here has observed.
 - **`CloudAppEvents` was read but is not used as a detection surface in v0.1, and that is this
   pack's largest structural gap.** Microsoft documents it as carrying Agent 365 observability data
   for AI agent activity - **the only documented surface in this evidence set that records what an

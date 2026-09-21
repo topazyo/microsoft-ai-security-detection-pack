@@ -24,7 +24,7 @@ and status label **that a detection file or a shipped query relies on**, as oppo
 reports, must be either quoted from a Microsoft
 Learn page read on a stated date, or marked Provisional or Requires further validation, with the
 reason stated and a workspace step that resolves it, or labelled at the point of use as observed in a
-lab tenant on a stated date rather than as documented. **The third of those is available only to a
+tenant on a stated date rather than as documented. **The third of those is available only to a
 value a shipped query acts on**, and section 1 names its members rather than counting them. There is
 no fourth category for anything a shipped query acts on.
 `docs/verification-methodology.md` section 1 is the canonical statement of the rule and names one of
@@ -38,8 +38,8 @@ template and that section ever disagree, that section governs.
       recorded.
 - [ ] Every **value string** the query filters on **or groups on** is either quoted from Learn, is a
       labelled placeholder the operator fills from their own workspace, or is labelled at the point
-      of use as observed in a lab tenant on a stated date.
-- [ ] A lab-observed value **widens a filter and never narrows one**, and **where the same column is
+      of use as observed in a tenant on a stated date.
+- [ ] An observed value **widens a filter and never narrows one**, and **where the same column is
       also grouped on, the grouping key is normalised** so that admitting a second spelling of one
       value cannot split it into two rows and understate whatever the grouping ranks.
 - [ ] I did **not** infer a column name from a product name, a portal label, a blog post, or another

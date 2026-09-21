@@ -30,7 +30,10 @@ also read `Timestamp`, `ReportId`, `DetectionMethods`, `NetworkMessageId`, `Send
 marked, from the same page and the same read. Nothing this file queries is undeclared across the pair.
 
 Columns and their documented values, quoted from the `EmailEvents` table reference on Microsoft
-Learn, read 2026-08-15 (page stamp 2026-08-03).
+Learn, read 2026-08-15, when the page's `ms.date` read 2026-08-03. **Re-read 2026-09-20, when the
+rendered "Last updated on" date read 2026-09-02**, which is a second field rather than a later value
+of the first: `ms.date` still read 2026-08-03 on that later read. The three value lists and the
+Streaming API note were unchanged on that read.
 
 | Column | Data type | Documented values (verbatim from Learn) |
 |---|---|---|
@@ -49,8 +52,8 @@ Learn, read 2026-08-15 (page stamp 2026-08-03).
 > for the two `Latest*` columns on that page, so this pack does not filter on them - it projects
 > them for the analyst to read.
 
-> **What one lab tenant emitted on 2026-08-24, beside what Learn publishes.** The value lists in the
-> table above are Microsoft's, re-read 2026-08-24 and unchanged by that read. A lab tenant emitted
+> **What one tenant emitted on 2026-08-24, beside what Learn publishes.** The value lists in the
+> table above are Microsoft's, re-read 2026-08-24 and unchanged by that read. A tenant emitted
 > three `DeliveryLocation` values differing from the published spellings, two of them by case alone
 > and one by a longer token, plus a fourth the published list does not carry, `Forwarded`. It also
 > emitted an `EmailDirection` value the published list does not carry, `Unknown`. **The page frames
@@ -67,8 +70,8 @@ Learn, read 2026-08-15 (page stamp 2026-08-03).
 // Deployment target: Microsoft Defender XDR advanced hunting.
 // Columns, and the value strings below except one, verified against Microsoft Learn on
 // 2026-08-15. The exception is "Junk folder", which Learn does not publish for this
-// column: a lab tenant emitted that spelling on 2026-08-24, and it is kept beside the
-// published "Junk" so the filter reaches both. Do not strike it as a transcription error.
+// column: a tenant emitted that spelling on 2026-08-24, and it is kept beside the
+// published "Junk" so the filter reaches both. The note on in~ below the first query says why.
 EmailEvents
 | where Timestamp > ago(7d)
 | where DetectionMethods has "Prompt injection protection"
@@ -92,17 +95,18 @@ EmailEvents
 | order by Timestamp desc
 ```
 
-**`Timestamp` and `ReportId` are projected because this is the file the README markets as a custom
-detection rule.** Microsoft's custom-detection-rules page says, for "all other Defender tables",
-project both "from the same event to ensure Defender identifies the original event that triggered
-the alert", and names the cost of omitting them as alerts not tagged with the correct entity scope
-and a less enriched alert timeline. It states this as a recommendation, not as a condition the
-wizard enforces. The same page separately states that `NetworkMessageId` and `RecipientEmailAddress`
-"must be present in the output results of the query to apply actions to email messages" - both are
-already projected here, so the query meets that condition. **Meeting it is necessary and not
-sufficient**: Microsoft states it as a requirement rather than as a guarantee, and the page does not
-say the two columns are the only thing the actions depend on. Read this as one prerequisite already
-satisfied, not as confirmation that the email response actions will be available to you.
+**`Timestamp` and `ReportId` are projected because this is the file the README designates as a
+custom detection rule.** Microsoft's custom-detection-rules page says, for "all other Defender
+tables", project both "from the same event to ensure Defender identifies the original event that
+triggered the alert", and names the cost of omitting them as alerts not tagged with the correct
+entity scope and a less enriched alert timeline. It states this as a recommendation, not as a
+condition the wizard enforces. The same page separately states that `NetworkMessageId` and
+`RecipientEmailAddress` "must be present in the output results of the query to apply actions to
+email messages" - both are already projected here, so the query meets that condition. **Meeting it
+is necessary and not sufficient**: Microsoft states it as a requirement rather than as a guarantee,
+and the page does not say the two columns are the only thing the actions depend on. Read this as one
+prerequisite already satisfied, not as confirmation that the email response actions will be
+available to you.
 
 **The same page also says not to filter on `Timestamp` or `TimeGenerated`, and sets the rule's
 lookback from its frequency rather than from the query**, with an exception for narrowing inside
@@ -125,7 +129,7 @@ place each of these values is named.
 queries in this file shipped with the case-sensitive `in` until this change was made on 2026-08-25.
 **The two dates do different jobs and are kept apart deliberately: 2026-08-24 is when the defect was
 observed, and 2026-08-25 is when the operator changed.** Anyone holding a copy taken between them has
-the `in` version. **On 2026-08-24 a lab tenant emitted none of the three literals these queries then
+the `in` version. **On 2026-08-24 a tenant emitted none of the three literals these queries then
 filtered on**: two came back differing from the
 published spelling only in case, and one by a longer token, so the filter could match nothing there.
 **An empty result of that kind is indistinguishable from a clean estate**, which is the failure mode
@@ -134,8 +138,9 @@ and it arrived on the `DeliveryLocation` filter beside it. **The run did not dem
 detection**, because it generated no event: what it established is that the literals could not match
 the spellings that tenant emitted. Microsoft's reference for the case-sensitive `in` publishes a comparison
 table giving `in` as case-sensitive and `in~` as its case-insensitive counterpart, and `in~` carries
-its own reference page titled "The case-insensitive in~ string operator"; both read 2026-08-24, which
-are this file's first reads of either.
+its own reference page, headed `in~ operator`, whose lead sentence reads "Filters a record set for
+data with a case-insensitive string"; both read 2026-08-24, which
+are this file's first reads of either, and the lead sentence re-read 2026-09-20.
 `in~` removes the case dependency. **It does not remove the spelling dependency**, which is why
 `Junk folder` is listed beside `Junk`: the same tenant emitted the longer form, and
 case-insensitivity cannot reach a different token. Both are kept because Microsoft Learn publishes
@@ -154,8 +159,8 @@ for your response model is a decision rather than a documented fact. Add it if i
 // Which mailboxes accumulated delivered-but-not-blocked injection attempts.
 // Columns, and the value strings below except one, verified against Microsoft Learn on
 // 2026-08-15. The exception is "Junk folder", which Learn does not publish for this
-// column: a lab tenant emitted that spelling on 2026-08-24, and it is kept beside the
-// published "Junk" so the filter reaches both. Do not strike it as a transcription error.
+// column: a tenant emitted that spelling on 2026-08-24, and it is kept beside the
+// published "Junk" so the filter reaches both. The note on in~ below the first query says why.
 EmailEvents
 | where Timestamp > ago(30d)
 | where DetectionMethods has "Prompt injection protection"
@@ -254,7 +259,7 @@ inferred.
 
 1. Complete the MSD-001 verification steps first, including the `getschema` diff **and its
    operator-selection step, which carries the multi-term `has` question this query shares.** **The
-   2026-08-24 lab run answered that question in part**: a multi-term right-hand side matched, on both
+   2026-08-24 run answered that question in part**: a multi-term right-hand side matched, on both
    surfaces, with all three of the test's positive controls true. **What it did not do is exclude the
    reading on which the terms match while separated**, which is the residual MSD-001 records and this
    file inherits along with the rest of its steps.
@@ -272,7 +277,7 @@ inferred.
    match is a row the detection silently drops**, and under the case-sensitive
    `in` these queries shipped with until the 2026-08-25 correction a difference of case alone was
    enough to do it.
-   **This step found exactly that defect.** On 2026-08-24 it showed a lab tenant emitting
+   **This step found exactly that defect.** On 2026-08-24 it showed a tenant emitting
    `DeliveryLocation` values the shipped `in ()` filter could not match, which is why the queries
    above now use `in~` and carry a second `Junk` spelling. Spelling still has to match even under
    `in~`, so read your own output rather than assuming the published list.
@@ -288,9 +293,9 @@ inferred.
 
 ## Sources
 
-- [EmailEvents table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailevents-table) - last verified 2026-08-15, **re-read 2026-08-24** for the `DeliveryLocation`, `DeliveryAction` and `EmailDirection` rows after a lab tenant emitted values the published lists do not carry. That read confirmed all three published lists unchanged, and confirmed the page attaches no completeness qualifier to any of them. Page stamp on that read: `ms.date` 2026-08-03, `updated_at` 2026-08-07
+- [EmailEvents table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-emailevents-table) - last verified 2026-08-15, **re-read 2026-08-24** for the `DeliveryLocation`, `DeliveryAction` and `EmailDirection` rows after a tenant emitted values the published lists do not carry. That read confirmed all three published lists unchanged, and confirmed the page attaches no completeness qualifier to any of them. Page stamp on that read: `ms.date` 2026-08-03, `updated_at` 2026-08-07
 - [`in` operator, case-sensitive (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/in-cs-operator) - read 2026-08-24, for the comparison table giving `in` as case-sensitive, which is the operator these queries shipped with until the 2026-08-25 correction
-- [`in~` operator, case-insensitive (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/in-operator) - read 2026-08-24, for the page title naming it the case-insensitive operator, for the performance note preferring `in` "when possible", and for the ASCII-text limit on case-insensitive operators
+- [`in~` operator, case-insensitive (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/in-operator) - read 2026-08-24, re-read 2026-09-20, for the lead sentence naming it case-insensitive, for the performance note preferring `in` "when possible", and for the ASCII-text limit on case-insensitive operators
 - [`case()` function (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/case-function) - read 2026-08-25, for the syntax `case(predicate_1, then_1, [predicate_2, then_2, ...] else)`, for the `else` argument being required, and for the published example applying it as a bucketing expression under `extend`. Page stamp on that read: `ms.date` 2024-08-11, `updated_at` 2025-05-25. **Its "Applies to" line names the same four products every Kusto reference page names**, so on this pack's own canonical reading it says nothing either way about Defender XDR advanced hunting; `docs/verification-methodology.md` section 6 records that reading and names the other functions this pack relies on under it
 - [Prompt injection protection in Microsoft Defender for Office 365 (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-office-365/step-by-step-guides/prompt-injection-protection-defender-for-office-365) - **two dated reads, and both are load-bearing.** Last verified 2026-08-17, for the Plan 2 scope sentence and the absence of any preview qualifier. **The "Applies to" line quoted above is from the 2026-08-16 read**, which is the read that recorded it; the 2026-08-17 conversion did not surface that element, and a conversion is evidence of presence rather than of absence for a page element
 - [Understand detection technology in the email entity page (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-office-365/step-by-step-guides/understand-detection-technology-in-email-entity) - last verified 2026-08-16
