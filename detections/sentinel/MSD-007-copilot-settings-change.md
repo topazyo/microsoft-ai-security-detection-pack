@@ -36,13 +36,13 @@ The Microsoft Sentinel data-connectors reference contradicts itself, and the con
   in Preview. The Azure Preview Supplemental Terms include additional legal terms that apply to
   Azure features that are in beta, preview, or otherwise not yet released into general
   availability." That is a blanket claim over the whole class.
-- The **same page** tags individual connector entries "(Preview)". **Counting the literal over
-  the rendered page on 2026-08-23 gives six occurrences: five sit in a connector entry's own title,
-  four at the end of that title and one before a further parenthetical, and the sixth sits inside a
-  numbered setup step in another entry's body. So five entries carry the tag**, and the instrument
-  is named here because the two figures differ and a reader re-running Group 7 has to know which one
-  they are reproducing. If the blanket notice were operative, per-entry labelling would be
-  redundant.
+- The **same page** tags individual connector entries "(Preview)". **Counting the literal
+  `(Preview)` over the rendered page on 2026-08-23 gives six occurrences: five sit in a connector
+  entry's own title, four at the end of that title and one before a further parenthetical, and the
+  sixth sits inside a numbered setup step in another entry's body. So five entries carry the tag**,
+  and the instrument is named here because the two figures differ and a reader re-running Group 7
+  has to know which one they are reproducing. If the blanket notice were operative, per-entry
+  labelling would be redundant.
 - The **Microsoft Copilot** entry carries **no** such tag, and its body contains no release-state
   sentence at all.
 
@@ -60,7 +60,7 @@ Separately: the `CopilotActivity` table reference on Microsoft Learn carries **n
 label of any kind**.
 
 > **Scope judgement, not a quotation.** The connector is named "**Microsoft Copilot**" and its
-> description spans "M365 Copilot **and Security Copilot**". Matching it to a Microsoft 365
+> description spans Microsoft Copilot **and Security Copilot**. Matching it to a Microsoft 365
 > Copilot control is therefore a judgement. Use the `Workload` column to separate the products, and
 > confirm which values your own tenant emits.
 
@@ -247,8 +247,8 @@ CopilotActivity
   `LLMEventData` for it.
 - **Any Copilot surface not covered by the Office Management API.** Per the connector reference:
   "This connector uses the Office Management API to get your Microsoft Copilot audit logs."
-- **Which product a row belongs to, without reading `Workload`.** The connector spans M365 Copilot
-  and Security Copilot.
+- **Which product a row belongs to, without reading `Workload`.** The connector spans Microsoft
+  Copilot and Security Copilot.
 - **Anything, if the connector is not deployed.** `CopilotActivity` is populated through the
   Microsoft Copilot logs data connector and nothing else, so an absent connector means an absent
   table rather than a quiet one. Other detections here depend on data reaching the workspace from

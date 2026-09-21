@@ -300,10 +300,11 @@ those readings. Their values
 render on your own screen wherever you run them, which is unavoidable in your own portal. **The
 variant above is the one this file tells you to schedule, and a scheduled rule does more than
 render**: it puts whatever it projects into alert storage, which is the same argument this file
-makes below for not projecting `Instructions`. **Never paste the contents of `McpServers`,
-`Endpoints`, `Permissions`, `DeclaredTools`, `DeclaredDataSources` or `Owners` anywhere** - not into
-an issue, not into a verification report, not into a pull request, and not privately either. What
-may leave them is the field names and the empty forms your platforms emit, never a value. More
+makes below for not projecting `Instructions`. **Never paste the contents of `Instructions`,
+`McpServers`, `Endpoints`, `Permissions`, `DeclaredTools`, `DeclaredDataSources` or `Owners`
+anywhere** - not into an issue, not into a verification report, not into a pull request, and not
+privately either. What may leave them is the field names and the empty forms your platforms emit,
+never a value. More
 generally, what travels outward from these queries is a column name or a value name, never a result
 row, a row count, or anything inside one. **That default holds where a column carries a closed set
 the platform defines; where a column carries free text the value is itself estate data and the

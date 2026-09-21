@@ -134,7 +134,12 @@ filtered on**: two came back differing from the
 published spelling only in case, and one by a longer token, so the filter could match nothing there.
 **An empty result of that kind is indistinguishable from a clean estate**, which is the failure mode
 verification step 2 exists to catch. Step 2 named it in advance for the `EmailDirection` `==` filter,
-and it arrived on the `DeliveryLocation` filter beside it. **The run did not demonstrate a concealed
+and it arrived on the `DeliveryLocation` filter beside it. **Why this filter changed operator and
+that one did not**: the deviation observed on `EmailDirection` was an unpublished value, `Unknown`,
+and case-insensitivity does not reach a different token any more than `in~` reaches `Junk folder`.
+No casing variant on that column has been observed in this pack's runs, and changing its operator
+would widen the population in a way no run here has measured. **Verification step 2 is what catches
+either**, which is why it names that filter first. **The run did not demonstrate a concealed
 detection**, because it generated no event: what it established is that the literals could not match
 the spellings that tenant emitted. Microsoft's reference for the case-sensitive `in` publishes a comparison
 table giving `in` as case-sensitive and `in~` as its case-insensitive counterpart, and `in~` carries

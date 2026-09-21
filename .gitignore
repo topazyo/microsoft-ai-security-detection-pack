@@ -1,4 +1,6 @@
-# This repository contains no query results, of any kind, from any environment.
+# This repository contains no query results from any environment: no result row, no row count, and
+# nothing inside one. A value a tenant emitted is named as an observed value where this pack
+# publishes one at all, rather than reproduced as output.
 #
 # The rules below are the mechanical half of that. They exist because the accident this pack is
 # most exposed to is not a decision to publish telemetry - it is `git add -A` after an export

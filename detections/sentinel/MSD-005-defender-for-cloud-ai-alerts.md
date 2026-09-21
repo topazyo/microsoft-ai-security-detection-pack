@@ -381,7 +381,11 @@ checklist.
    **Dropping the leg and relying on the `AlertType` prefix alone assumes that answer**: in a
    workspace that fills `AlertName` and leaves `AlertType` empty, which is one of the two states this
    step exists to distinguish, the reduced query returns zero rows, and **a zero from it is
-   uninterpretable rather than clean**. **One difference from Group 2's own
+   uninterpretable rather than clean**. **How far the `AlertName` leg reaches, derived from the
+   table above**: of the seventeen alert names this file reproduces, **four carry the literal
+   `AI model`**, so that leg alone finds those four and the `AlertType` prefix is what reaches the
+   rest. A fifth name carries `model` inside a longer token and the two-term operand does not match
+   it. **One difference from Group 2's own
    operands, worth recording alongside the result.** The string-operators page states that the term
    index carries "all terms that are three characters or more" and that where a term is shorter the
    query "will revert to scanning the values in the column". `AI` is two characters, where every Group 2 operand is

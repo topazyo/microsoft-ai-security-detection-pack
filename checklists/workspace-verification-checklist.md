@@ -179,6 +179,9 @@ print BareIsEmpty = isempty(dynamic([])), StringForm = tostring(dynamic([]))
       rejected. **If the control errors too, it is not**: record this step as not completed with both
       error texts, and treat the deployment decisions Group 8 keys to this check as unmade rather than
       answered. Group 2 below states the same rule for its own operator test.
+      **Expect the control block to return one row, with `ArrayLength` reading `1`.** The
+      2026-08-24 run records this control passing on both surfaces before the probe beside it, so a
+      block that errors rather than returning a row leaves the probe settling nothing.
 
 ```kusto
 let Y = dynamic(["a"]);
@@ -634,7 +637,10 @@ tenant's schema did not carry it, and no citation was stale.
       and relying on the `AlertType` prefix alone assumes that answer**: in a workspace that fills
       `AlertName` and leaves `AlertType` empty, which is one of the two states this step exists to
       distinguish, the reduced query returns zero rows, and **a zero from it is uninterpretable
-      rather than clean**. MSD-005 verification step 2 carries the same warning.
+      rather than clean**. **How far the `AlertName` leg reaches**: of the seventeen alert names
+      MSD-005 reproduces, **four carry the literal `AI model`**, so that leg alone finds those four
+      and the `AlertType` prefix is what reaches the rest. MSD-005 verification step 2 carries the
+      same warning.
       **One difference from Group 2's own operands, and record whether it changes the answer.** The
       string-operators page states that the term index carries "all terms that are three characters
       or more" and that where a term is shorter the query "will revert to scanning the values in the

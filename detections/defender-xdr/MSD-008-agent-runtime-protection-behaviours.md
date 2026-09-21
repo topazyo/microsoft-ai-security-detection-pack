@@ -225,6 +225,10 @@ the checklist.
 > errors too, the comment-only literal is not what the engine rejected**: record both error texts and
 > treat this residual as still open rather than answered.
 >
+> **Expect the control block to return one row, with `ArrayLength` reading `1`.** The 2026-08-24 run
+> records this control passing first on each surface, so a block that errors rather than returning a
+> row leaves the probe below settling nothing.
+>
 > ```kusto
 > let Y = dynamic(["a"]);
 > print ArrayLength = array_length(Y), Matches = ("a" in (Y)), MatchesCI = ("a" in~ (Y))
