@@ -1,0 +1,74 @@
+# This repository contains no query results, of any kind, from any environment.
+#
+# The rules below are the mechanical half of that. They exist because the accident this pack is
+# most exposed to is not a decision to publish telemetry - it is `git add -A` after an export
+# landed in the working directory. A pull-request diff lives under refs nobody can rewrite, so the
+# cheap moment to stop that is before the commit.
+#
+# This is a backstop and not the control. The control is the Confidentiality section of README.md,
+# the exclusion list in docs/scope-and-out-of-scope.md, and the attestation on every issue and pull
+# request template. A file type that is not listed here is not thereby cleared to commit.
+
+# Query and telemetry exports. These are the formats the Defender and Sentinel portals hand you
+# when you export a result set.
+*.csv
+*.tsv
+*.json
+*.jsonl
+*.ndjson
+*.xlsx
+*.xls
+*.parquet
+
+# Screenshots and captured images. The pack ships none and accepts none.
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.webp
+
+# Archives and compressed files, which hide any of the above inside them. The bare compression
+# extensions are listed as well as the tar pairs, because *.tar.gz does not match an export
+# compressed straight to results.csv.gz, and *.gz does.
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+*.bz2
+*.xz
+
+# Portal logs and captured traffic. This is the likeliest single form of the accident the header
+# above names.
+*.log
+*.har
+
+# A gap this file has by design, stated rather than left to be discovered, and it is a property of
+# the approach rather than a list. Any format that carries too much legitimate traffic in a
+# documentation repository to exclude by default is unblocked here whatever it can also carry: *.txt
+# is the plainest case, and *.md is the same case and a stronger one, being this pack's own format.
+# The header applies: an unlisted type is not thereby cleared to commit.
+
+# Scratch and working paths. Anything here is by definition not reviewed.
+scratch/
+tmp/
+temp/
+*.local
+*.bak
+
+# Agent and tooling state. This one is here because the rule that hides it today lives in the
+# repository this pack is authored in, and that rule does not travel with the pack. A published
+# copy would otherwise start with no rule for it at all.
+.omc/
+
+# Editor and OS artefacts.
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*~

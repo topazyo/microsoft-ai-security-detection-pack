@@ -1,0 +1,29 @@
+# blank_issues_enabled: false, below, is the most important line in this file.
+#
+# All three issue templates carry a confidentiality attestation. None of them applies to a blank
+# issue, and GitHub offers "Open a blank issue" by default. A contributor who wants to paste
+# "here is what my workspace returned" will use whichever route asks the fewest questions, which is
+# the blank one - so every inbound control this repository has would be bypassable by a default
+# setting.
+blank_issues_enabled: false
+
+contact_links:
+  - name: Report a security finding privately
+    url: https://github.com/topazyo/microsoft-ai-security-detection-pack/security/advisories/new
+    about: >-
+      The private route itself. Use it for anything you cannot explain without environment detail,
+      and for a detection you believe returns nothing when it should return rows. Blank issues are
+      disabled here, so this is the route that replaces them.
+
+  - name: Report something that needs environment detail to explain
+    url: https://github.com/topazyo/microsoft-ai-security-detection-pack/blob/main/SECURITY.md
+    about: >-
+      If explaining your finding requires query output, row counts, identifiers, or anything else
+      from a real environment, do not open a public issue. A public issue is public the moment it
+      exists, and deletion is not retraction. Use the private route instead.
+
+  - name: How detections in this pack are verified
+    url: https://github.com/topazyo/microsoft-ai-security-detection-pack/blob/main/docs/verification-methodology.md
+    about: >-
+      Read this before proposing a detection or disputing a status label. It records what was
+      checked, on what date, and what the checks do not establish.

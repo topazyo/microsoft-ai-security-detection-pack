@@ -1,0 +1,60 @@
+MIT License
+
+Copyright (c) 2026 Topaz Hurvitz
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-------------------------------------------------------------------------------
+
+WHAT THIS LICENCE COVERS
+
+The grant above covers the author's own work in this repository: the KQL
+queries, and the prose written around them. "Software" is read to include
+both, because the queries and the documentation are interleaved inside the
+same markdown files and a boundary drawn between them would have to be
+adjudicated fence by fence.
+
+WHAT THIS LICENCE DOES NOT COVER
+
+This repository quotes Microsoft Learn documentation extensively and cites
+MITRE and OWASP identifiers. None of the following is the author's to license,
+and none of it is relicensed by the grant above:
+
+  - Quoted Microsoft Learn text, including the table, column and value
+    descriptions reproduced verbatim in the detection files.
+  - Microsoft product names, table names, column names, alert names and alert
+    identifiers.
+  - MITRE ATLAS technique identifiers and titles.
+  - OWASP Top 10 for LLM Applications item identifiers and titles.
+
+Every one of those is cited to the source it came from, with the date that
+source was read. Those citations sit in the Sources sections of the
+detection files and of the cross-walk; the files that repeat the material rely
+on them rather than carrying a second copy, so the URL and the date for any
+quoted item are in the file that establishes it. Reuse of that material is
+governed by its own publisher's terms and not by this file. Read the terms that
+apply to the source it was taken from rather than inheriting an assumption from
+here.
+
+Microsoft's documentation is not published under a single set of terms, and
+which terms reach a given quotation depends on where it was taken from. The
+Licence section of README.md records what was established about that, naming
+each documentation repository, the licence file in it, and the date that file
+was read. It is recorded there so that you know there is a question to answer;
+it is not an answer, and nothing in this repository is legal advice.
