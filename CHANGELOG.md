@@ -53,6 +53,33 @@ The date on this entry moves when the release gate is met, and no run has met it
   pull request template carrying the no-invented-schema check.
 - `LICENSE`, this file, and `.gitignore`.
 
+### Fixed
+
+- **2026-09-21 - `README.md` described a failure mode that does not occur.** The section "Why that
+  rule matters more than the queries" said a reader pastes a query naming a fictional column, gets
+  zero rows, and cannot tell that from a clean environment. **A reference to a nonexistent column
+  is not a zero-row result.** Microsoft classes it as a syntax error and the query never runs:
+  "The query contained unrecognized names, including references to nonexistent operators, columns,
+  functions, or tables", with `'project' operator: Failed to resolve scalar expression named 'x'`
+  given as an example message
+  ([advanced hunting errors](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors),
+  read 2026-09-21).
+
+  **The corrected passage names the failure this pack is actually built against**: a real column
+  filtered on a guessed value, or a placeholder left in place, which does return zero rows and does
+  read as a clean environment. That is the case MSD-002's observed `DeliveryLocation` spelling and
+  the MSD-006 and MSD-008 placeholders exist to guard, and the case the discovery queries exist to
+  close.
+
+  **The pack already stated the correct mechanism elsewhere and the README contradicted it.**
+  [`SECURITY.md`](SECURITY.md) ranks a query built on a column that no longer exists as one that
+  "fails loudly, which is survivable", against one built on a column that exists but means
+  something else, which does not. The defect was an internal contradiction, not a gap.
+
+  Recorded here because a citation is a claim in this pack, and a mechanism stated in the section
+  that justifies the pack's central rule is a larger claim than a citation. **No status label, no
+  schema element, and no query changed.**
+
 ### Verification dates in this version
 
 - **2026-08-15** for the first source pass: every table reference, every status page, the MITRE

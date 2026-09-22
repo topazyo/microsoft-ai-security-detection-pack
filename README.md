@@ -33,9 +33,14 @@ README and that section ever disagree, that section governs.
 ## Why that rule matters more than the queries
 
 AI-security detection content has a specific failure mode: plausible schema. Column names like
-`XPIADetected` or `AbnormalCopilotBehavior` read exactly like real Defender schema. A SOC engineer
-pastes the query, gets zero rows, and cannot tell whether that means a clean environment or a
-fictional column. The pack has then cost them time and taught them nothing.
+`XPIADetected` or `AbnormalCopilotBehavior` read exactly like real Defender schema. **Invent the
+column outright and the query fails loudly**: Microsoft classes a reference to a nonexistent column
+as a syntax error, so the query never runs
+([advanced hunting errors](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors),
+read 2026-09-21). **The silent case is the expensive one** - a real column filtered on a guessed
+value, or a placeholder left in place, returns zero rows and reads as a clean environment. The
+reader has then lost time and learned nothing, and that is the case this pack is built against.
+[`SECURITY.md`](SECURITY.md) ranks that class first for the same reason.
 
 So several queries here are less convenient than they could be. Where Microsoft does not publish a
 value set, this pack ships a **discovery query** that enumerates what your tenant actually emits,
