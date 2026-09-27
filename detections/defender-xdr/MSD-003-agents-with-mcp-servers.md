@@ -77,9 +77,9 @@ stamp 2026-06-03). The page title reads **`AgentsInfo (Preview)`**.
 > `RawAgentInfo`" (`ms.date` 2026-09-16). Both were read 2026-09-27. Microsoft's own sources
 > conflict, which is what that label means in the canonical legend, and for `AgentName` they
 > conflict on this file's own deployment target. The queries keep the names this table's reference
-> publishes. A wrong name fails loudly, because a reference to a column the table does not carry is
-> a syntax error, so `column_ifexists()` is deliberately not used: it would turn that error into an
-> empty column. Verification step 1 settles which names your workspace carries.
+> publishes. A wrong name fails loudly, because a reference to a column the table does not carry
+> stops the query with an error; `column_ifexists()` is deliberately not used, because it would turn
+> that error into an empty column. Verification step 1 settles which names your workspace carries.
 
 > **Why the query does not use `isnotempty()` on its own, and why that matters more than it looks.**
 > **The `isempty()` reference settles it outright, in its own example table on the page this file
@@ -112,7 +112,12 @@ stamp 2026-06-03). The page title reads **`AgentsInfo (Preview)`**.
 > about AI agents created with Microsoft Copilot Studio, including agent configuration and ownership
 > details" - read 2026-08-15, six weeks after the date the `AgentsInfo` reference gives for its
 > removal. Do not read the schema list's continued listing as evidence the table is supported.
-> Confirm which of the two your workspace actually returns.
+> Confirm which of the two your workspace actually returns. In one tenant on 2026-09-27 neither
+> did: a `getschema` query over `AgentsInfo`, and one over `AIAgentsInfo`, both failed to resolve
+> their table, while a `print` control in the same session succeeded. They were submitted through
+> Microsoft
+> Graph's `runHuntingQuery` method, which Microsoft documents as "for advanced hunting in Microsoft
+> 365 Defender", read 2026-09-27.
 
 ## Query
 
@@ -483,7 +488,8 @@ onboarding requirements", read 2026-09-27.
 - [AgentsInfo table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-agentsinfo-table) - last verified 2026-08-15, re-read 2026-09-27 for the `AgentName` and `EntraAgentId` rows, which are unchanged, at an unchanged rendered date of 2026-06-03
 - [Azure Monitor Logs reference - AgentsInfo (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/agentsinfo) - read 2026-09-27, `ms.date` 2026-07-31, for the `Name` and `EntraAgentID` rows the Requires further validation note sets against this file's schema table
 - [Discover local AI agents with Microsoft Defender for Endpoint (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-endpoint/discover-local-ai-agents) - read 2026-09-27, `ms.date` 2026-09-16, for its advanced-hunting queries on `AgentsInfo`, which use `Name` and read `name`, `type` and `endpoint` from `McpServers`, for the sentence listing the columns that carry local AI agent data, for where it reports a local agent's MCP servers, for its sentence on when the table adds a record, and for its prerequisites
-- [Handle advanced hunting errors (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors) - read 2026-09-27, `ms.date` 2026-05-18, for the syntax-error row, whose cause includes "references to nonexistent operators, columns, functions, or tables"
+- [Handle advanced hunting errors (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors) - read 2026-09-27, `ms.date` 2026-05-18, for the syntax-error row, whose cause includes "references to nonexistent operators, columns, functions, or tables", and for the semantic-error row, whose cause describes valid names and whose example is `'project' operator: Failed to resolve scalar expression named 'x'`
+- [`security: runHuntingQuery` (Microsoft Graph reference, Microsoft Learn)](https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery) - read 2026-09-27, `ms.date` 2026-07-02, for the method being "for advanced hunting in Microsoft 365 Defender", which is the surface the 2026-09-27 schema query noted above was submitted to
 - [Detect and investigate threats to AI agents using Microsoft Defender (Preview) (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/security-for-ai/ai-agent-detection-protection) - last verified 2026-08-15, **re-read 2026-09-20, when the rendered "Last updated on" date read 2026-09-03**, and Microsoft's name for the product in the observability sentence quoted above read `Microsoft Copilot Agent Builder` rather than the form this file carried before that read. **The page's `ms.date` read 2026-08-07 on that same read**, so the two fields disagree here and the date above is the rendered one
 - [Advanced hunting schema tables (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-schema-tables) - last verified 2026-08-15, for the `AIAgentsInfo` listing noted above
 - [`isempty()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/isempty-function) - last verified 2026-08-15, for the empty-`dynamic` behaviour the query predicate works around, and re-read 2026-08-19 for the published example table quoted above. **Each date is kept rather than collapsed**, because each later read is what added the material recorded against it

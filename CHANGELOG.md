@@ -58,12 +58,12 @@ The date on this entry moves when the release gate is met, and no run has met it
 - **2026-09-21 - `README.md` described a failure mode that does not occur.** The section "Why that
   rule matters more than the queries" said a reader pastes a query naming a fictional column, gets
   zero rows, and cannot tell that from a clean environment. **A reference to a nonexistent column
-  is not a zero-row result.** Microsoft classes it as a syntax error and the query never runs:
+  is not a zero-row result.** The query never runs, and the errors page gives this cause:
   "The query contained unrecognized names, including references to nonexistent operators, columns,
   functions, or tables", which is the cause the page gives for syntax errors, with
   `A recognition error occurred.` as that row's example message
   ([advanced hunting errors](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors),
-  read 2026-09-21, re-read 2026-09-27). The 2026-09-27 entry below records what this sentence
+  read 2026-09-21, re-read 2026-09-27). The 2026-09-27 entries below record what this sentence
   said before.
 
   **The corrected passage names the failure this pack is actually built against**: a real column
@@ -136,8 +136,9 @@ The date on this entry moves when the release gate is met, and no run has met it
   definition in the canonical legend. The label is scoped to the column names: MSD-003 carries it
   for both and MSD-004 for `AgentName`, the only one of the two it uses, and neither detection's
   status moves. The queries keep the names the Defender XDR reference publishes, so a wrong name
-  fails loudly as a syntax error; `column_ifexists()` was not used because it would make that
-  failure silent. MSD-003's verification step 1 and checklist Group 3 now carry a `getschema` check
+  fails loudly, stopping the query with an error; `column_ifexists()` was not used because it
+  would make that failure silent. MSD-003's verification step 1 and checklist Group 3 now carry a
+  `getschema` check
   that settles which names a workspace carries. The free-text column lists in the scope document
   and the checklist note the contested name, and MSD-008 now calls MSD-007 the one detection whose
   status is Requires further validation rather than the one row carrying that label, since the
@@ -230,6 +231,20 @@ The date on this entry moves when the release gate is met, and no run has met it
   where a key's absence
   matters, noting that its reference settles nothing about availability in Defender XDR advanced
   hunting.
+- **2026-09-27 - The loud-failure sentence named one error class where Microsoft's sources give
+  two.** `README.md` said Microsoft classes a reference to a nonexistent column as a syntax error,
+  MSD-003, MSD-004 and checklist Group 3 said a wrong `AgentsInfo` column name fails with one, and
+  checklist Group 1 said a missing column produces a semantic error. The
+  [advanced hunting errors](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors)
+  page, re-read 2026-09-27 (`ms.date` 2026-05-18), gives unrecognized names as a cause of syntax
+  errors, and its semantic-error row describes a query that uses valid names, but that row's
+  example is `'project' operator: Failed to resolve scalar expression named 'x'`. The message one
+  tenant's engine returned for an unresolved table on 2026-09-27 was "'getschema' operator: Failed
+  to resolve table or column expression named 'AgentsInfo'. Fix semantic errors in your query."
+  The README now states both and that the query stops either way; the other four sites say the
+  query stops with an error without naming a class, and the 2026-09-21 entry and the `AgentsInfo`
+  entry above are reworded the same way. The conclusion, that an invented column fails loudly, is
+  unchanged. No query changed.
 
 ### Verification dates in this version
 
@@ -516,7 +531,7 @@ The date on this entry moves when the release gate is met, and no run has met it
     corrected site carries a dated marker.** **No query changed**, and the `distinct` in each
     baseline leg is kept with a comment recording that it is a no-op as the leg stands and becomes
     load-bearing the moment the collapse above it is removed.
-- **2026-09-27 for the reads the twelve corrections dated 2026-09-27 under Fixed rest on**, in the
+- **2026-09-27 for the reads the thirteen corrections dated 2026-09-27 under Fixed rest on**, in the
   senses the sub-entries below name. Dates given as `ms.date` name that field.
   - **Pages new to the pack:** the Purview page on Copilot audit logs; the Azure Monitor
     example-queries page for `CopilotActivity`; the page on advanced hunting with Microsoft Sentinel
@@ -530,7 +545,10 @@ The date on this entry moves when the release gate is met, and no run has met it
     queries cited by MSD-002. None of them sets a status or moves a value's class.
   - **A new reason on a page already cited:** the advanced hunting errors page, now in MSD-003's
     and MSD-004's Sources for why a wrong column name fails loudly, and re-read for the example
-    message corrected above; the AI agent detection and protection page, for the published-agents
+    message corrected above and for its semantic-error row; the Microsoft Graph `runHuntingQuery`
+    reference, cited by MSD-007 since 2026-09-19 and now in MSD-003's and MSD-004's Sources for the
+    surface the 2026-09-27 schema query below was submitted to; the AI agent detection and
+    protection page, for the published-agents
     sentence MSD-008 now quotes; and the advanced-hunting schema tables page, for the sentence
     section 3.1 of the methodology now quotes about where `ActionType` values are listed.
   - **Pages re-read to settle a question rather than to add a citation:** the Defender XDR
@@ -558,6 +576,16 @@ construction validated against Microsoft Learn schema documentation rather than 
 **Nothing these runs showed reaches past those three dates**, or past the workspace they were
 run against. What each detection cannot see, and what its own verification steps ask you to
 establish before you deploy it, is stated in the detection file.
+
+A schema query on 2026-09-27 is recorded beside those runs and is not one of them. In one tenant,
+`AgentsInfo | getschema | project ColumnName, ColumnType` and the same query over `AIAgentsInfo`
+both failed to resolve their table, while a `print` control in the same session succeeded. They
+were submitted through Microsoft Graph's
+[`runHuntingQuery`](https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery)
+method, which Microsoft documents as "for advanced hunting in Microsoft 365 Defender" (read
+2026-09-27, `ms.date` 2026-07-02). So the `AgentsInfo` column names MSD-003 and MSD-004 label
+Requires further validation could not be settled there, and neither could which of the two tables a
+workspace returns.
 
 ### Known gaps carried into this version
 

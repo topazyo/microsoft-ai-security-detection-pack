@@ -14,7 +14,8 @@ recorded as not completed on at least one run.
 
 **Queries were submitted on both surfaces, and some of them did not resolve there.** **Two schema
 failures are on the record and they are not on the same footing**: one table did not resolve on any
-run this pack records, while one column failed on the first run only and its three deployment
+run this pack records, nor in a schema query on 2026-09-27 that was not a checklist run, while one
+column failed on the first run only and its three deployment
 queries parsed and ran on a later one. Each detection file records what its own queries did.
 
 **No detection here has yet been observed firing.**
@@ -78,8 +79,8 @@ than two house styles**, so read the indentation before deciding what a note gov
 ## Group 1 - Schema comparison, then table availability
 
 **Do the schema diff first.** This checklist's results table treats "Schema mismatch" as the most
-valuable outcome it can produce. A renamed or missing column produces a semantic error that makes
-the whole query fail, and
+valuable outcome it can produce. A renamed or missing column stops the whole query with an error,
+and
 the "Runs, unconfirmed" outcome has no path to that result.
 
 For each table, run `getschema` and **diff the output against the schema table in the detection
@@ -481,9 +482,10 @@ amount of further page reading settles any of this; only the test does.
 - [ ] `AgentsInfo | getschema | where ColumnName in ("AgentName", "Name", "EntraAgentId",
       "EntraAgentID") | project ColumnName` - record which names come back. MSD-003 marks
       `AgentName` and `EntraAgentId` Requires further validation, and MSD-004 marks `AgentName`,
-      because Microsoft's pages name those columns differently; their queries fail with a syntax
-      error if a name they use is absent. The case-sensitive `in` is deliberate: two of the four
-      names differ only by case.
+      because Microsoft's pages name those columns differently; their queries stop with an error if
+      a name they use is absent. The case-sensitive `in` is deliberate: two of the four names differ
+      only by case. If this step fails to resolve `AgentsInfo` itself, the names cannot be settled
+      in that workspace.
 - [ ] `AgentsInfo | extend R = tostring(McpServers) | where R !in~ ("", "[]", "{}", "null") | take 5
       | project AgentId, McpServers` - **read the JSON.** Record the field names. The table
       reference does not document them, Microsoft's local-agent queries cover only that platform,
