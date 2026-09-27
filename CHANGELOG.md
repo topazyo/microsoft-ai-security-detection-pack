@@ -80,6 +80,20 @@ The date on this entry moves when the release gate is met, and no run has met it
   that justifies the pack's central rule is a larger claim than a citation. **No status label, no
   schema element, and no query changed.**
 
+- **2026-09-27 - The pack's own example of invented schema named a documented property.**
+  `README.md` and section 1 of `docs/verification-methodology.md` used `XPIADetected` beside
+  `AbnormalCopilotBehavior` as a name that reads like real schema, and the methodology said all
+  three names a past review flagged "were not real schema". `XPIADetected` is not a
+  `CloudAppEvents` column, but the Purview page on Copilot audit logs documents it as a property of
+  `AccessedResources` in Copilot audit records
+  ([Audit logs for Copilot and AI applications](https://learn.microsoft.com/en-us/purview/audit-copilot),
+  `ms.date` 2026-08-26, read 2026-09-27). Both files drop it and keep `AbnormalCopilotBehavior`.
+  The third name, `DataExfiltrationDetected`, was checked on the same date along with
+  `AbnormalCopilotBehavior`: neither is a `CloudAppEvents` column, and a Learn site search returned
+  no page for either. The methodology sentence now states those two findings and carries a dated
+  marker. On this pack's reading, which no page read states and no run has tested, a property
+  nested in a `dynamic` payload is also the silent case rather than the loud one the README paired
+  it with. No status label, no schema element and no query changed.
 ### Verification dates in this version
 
 - **2026-08-15** for the first source pass: every table reference, every status page, the MITRE

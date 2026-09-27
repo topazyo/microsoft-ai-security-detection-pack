@@ -72,11 +72,25 @@ that nothing unsourced ships unmarked, and an illustration that says it is one d
 
 ### Why the rule is stated this strictly
 
-The companion repository, `microsoft-ai-security-control-plane`, had a technical review flag three
-column names - `XPIADetected`, `DataExfiltrationDetected` and `AbnormalCopilotBehavior` - as
-plausible-but-fabricated `CloudAppEvents` fields. They read exactly like real schema. They were not
-real schema. A detection engineer running a query built on invented columns learns nothing except
-that the author did not check.
+The companion repository, `microsoft-ai-security-control-plane`, had a technical review flag
+column names such as `DataExfiltrationDetected` and `AbnormalCopilotBehavior` as
+plausible-but-fabricated `CloudAppEvents` fields. They read exactly like real schema. Neither is a
+column of that table, whose reference was re-read on 2026-09-27, and a Microsoft Learn site search
+for each name returned no page on the same date. A detection engineer running a query built on
+invented columns learns nothing except that the author did not check.
+
+> **Correction, 2026-09-27.** An earlier version of this passage named a third column,
+> `XPIADetected`, and said all three were not real schema. That was wrong for `XPIADetected`. It is
+> not a `CloudAppEvents` column, but Microsoft documents it as a property of `AccessedResources` in
+> Copilot audit records:
+> "XPIADetected is a boolean that denotes whether there was an XPIA (Cross Prompt Injection Attack)
+> detected from a particular resource which Copilot accessed"
+> ([Audit logs for Copilot and AI applications](https://learn.microsoft.com/en-us/purview/audit-copilot),
+> `ms.date` 2026-08-26, read 2026-09-27). The same site search that returned no page for the other
+> two names returned that page for this one. A property nested inside a `dynamic` payload is also,
+> on this pack's reading, the silent case rather than the loud one, because a wrong key path there
+> does not fail the query; no Kusto reference page read on 2026-09-27 states that, and no run of
+> this pack has tested it. `CHANGELOG.md` is the record.
 
 That is the failure this pack is built to avoid, and it is why several queries here are less
 convenient than they could be: the shipped query does not filter on a value Microsoft has not

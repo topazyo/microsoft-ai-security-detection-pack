@@ -32,8 +32,8 @@ README and that section ever disagree, that section governs.
 
 ## Why that rule matters more than the queries
 
-AI-security detection content has a specific failure mode: plausible schema. Column names like
-`XPIADetected` or `AbnormalCopilotBehavior` read exactly like real Defender schema. **Invent the
+AI-security detection content has a specific failure mode: plausible schema. A column name like
+`AbnormalCopilotBehavior` reads exactly like real Defender schema. **Invent the
 column outright and the query fails loudly**: Microsoft classes a reference to a nonexistent column
 as a syntax error, so the query never runs
 ([advanced hunting errors](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors),
