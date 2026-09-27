@@ -32,8 +32,8 @@ README and that section ever disagree, that section governs.
 
 ## Why that rule matters more than the queries
 
-AI-security detection content has a specific failure mode: plausible schema. Column names like
-`XPIADetected` or `AbnormalCopilotBehavior` read exactly like real Defender schema. **Invent the
+AI-security detection content has a specific failure mode: plausible schema. A column name like
+`AbnormalCopilotBehavior` reads exactly like real Defender schema. **Invent the
 column outright and the query fails loudly**: Microsoft classes a reference to a nonexistent column
 as a syntax error, so the query never runs
 ([advanced hunting errors](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors),
@@ -138,10 +138,24 @@ detections" implies on its own.
 This is an assumption a coverage map can easily get wrong, so it is stated first. Across the seven
 Microsoft Learn pages listed in
 [`docs/verification-methodology.md`](docs/verification-methodology.md) section 3.1, **no table or
-column documents Microsoft 365 Copilot user prompts or chat interactions.** Two of those seven carry
+column documents Microsoft 365 Copilot user prompts.** Two of those seven carry
 the weight: the advanced hunting overview contains zero occurrences of "Copilot" and zero of
-"prompt", and the schema table list - which enumerates every advanced hunting table - contains one
-occurrence of "Copilot", referring to Copilot **Studio** agents.
+"prompt", and the schema table list - which enumerates every native Defender XDR advanced hunting
+table - contains one occurrence of "Copilot", referring to Copilot **Studio** agents.
+
+Three things bound that claim. It is about the native Defender XDR schema. Advanced hunting in the
+Defender portal can also query a connected Microsoft Sentinel workspace, where Microsoft says "you
+can find many of that workspace's tables"
+([advanced hunting with Microsoft Sentinel data](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-microsoft-defender),
+read 2026-09-27) without naming `CopilotActivity`; that Sentinel table carries Copilot interaction
+audit records, though not documented prompt text
+([`CopilotActivity` table reference](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/copilotactivity),
+re-read 2026-09-27). And queries published outside Microsoft filter `CloudAppEvents` on
+`ActionType == "CopilotInteraction"`, a value no Microsoft Learn page read for this pack documents
+for that column: the
+[`CloudAppEvents` reference](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudappevents-table),
+re-read 2026-09-27, lists no `ActionType` values, and no page the Microsoft Learn site search
+returned for the two terms on that date carries both.
 
 What exists is **two adjacent surfaces on different release states**, and this pack builds on both:
 prompt injection carried in *email* through Defender for Office 365 (which does reach advanced
@@ -278,8 +292,9 @@ which is the largest single block of other people's material in this pack.
 
 > **One thing worth knowing before you reuse the quoted material.** Microsoft's documentation is not
 > published under a single licence, and which licence reaches a quotation depends on which repository
-> the page is published from. Four repositories are in play here. Each licence file below was read on
-> 2026-08-17:
+> the page is published from. Four of the repositories in play here were checked, and each licence
+> file below was read on 2026-08-17. Pages this pack quotes from other repositories, among them the
+> Microsoft Graph, Purview and Agent 365 documentation, are not covered by this note:
 >
 > - [`MicrosoftDocs/defender-docs`](https://github.com/MicrosoftDocs/defender-docs) - `LICENSE` is
 >   the **MIT License**.

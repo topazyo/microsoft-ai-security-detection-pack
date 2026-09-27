@@ -63,20 +63,35 @@ unchanged. **One of the classes
 that sits outside the rule is named here rather than left to be discovered**, because a reader of
 this section meets it first. The
 workspace verification report template and [`SECURITY.md`](../SECURITY.md) carry an invented
-`ActionType` illustration, because no documented value exists for that column in this scope and a
-template has to show a contributor the shape to send. **Those two files and no others**: the other
-three contribution templates point at the illustration to tell a contributor not to send it back,
+`ActionType` illustration, because no documented value exists for `BehaviorInfo.ActionType` in this
+scope and a template has to show a contributor the shape to send. **Those two files and no
+others**: the other three contribution templates point at the illustration to tell a contributor not
+to send it back,
 and do not carry it. **It is marked as invented at every point of use.** That is the
 rule above applied to a different problem rather than an exception to it: what the rule protects is
 that nothing unsourced ships unmarked, and an illustration that says it is one does not breach it.
 
 ### Why the rule is stated this strictly
 
-The companion repository, `microsoft-ai-security-control-plane`, had a technical review flag three
-column names - `XPIADetected`, `DataExfiltrationDetected` and `AbnormalCopilotBehavior` - as
-plausible-but-fabricated `CloudAppEvents` fields. They read exactly like real schema. They were not
-real schema. A detection engineer running a query built on invented columns learns nothing except
-that the author did not check.
+The companion repository, `microsoft-ai-security-control-plane`, had a technical review flag
+column names such as `DataExfiltrationDetected` and `AbnormalCopilotBehavior` as
+plausible-but-fabricated `CloudAppEvents` fields. They read exactly like real schema. Neither is a
+column of that table, whose reference was re-read on 2026-09-27, and a Microsoft Learn site search
+for each name returned no page on the same date. A detection engineer running a query built on
+invented columns learns nothing except that the author did not check.
+
+> **Correction, 2026-09-27.** An earlier version of this passage named a third column,
+> `XPIADetected`, and said all three were not real schema. That was wrong for `XPIADetected`. It is
+> not a `CloudAppEvents` column, but Microsoft documents it as a property of `AccessedResources` in
+> Copilot audit records:
+> "XPIADetected is a boolean that denotes whether there was an XPIA (Cross Prompt Injection Attack)
+> detected from a particular resource which Copilot accessed"
+> ([Audit logs for Copilot and AI applications](https://learn.microsoft.com/en-us/purview/audit-copilot),
+> `ms.date` 2026-08-26, read 2026-09-27). The same site search that returned no page for the other
+> two names returned that page for this one. A property nested inside a `dynamic` payload is also,
+> on this pack's reading, the silent case rather than the loud one, because a wrong key path there
+> does not fail the query; no Kusto reference page read on 2026-09-27 states that, and no run of
+> this pack has tested it. `CHANGELOG.md` is the record.
 
 That is the failure this pack is built to avoid, and it is why several queries here are less
 convenient than they could be: the shipped query does not filter on a value Microsoft has not
@@ -147,14 +162,15 @@ reference, the `AgentsInfo` table reference, the `BehaviorInfo` table reference,
 detection and protection page.
 
 **What was found:** no table, column, or page in that set documents Microsoft 365 Copilot user
-prompts or Copilot chat interactions. Two of the seven carry the weight, and both were checked by
+prompts. Two of the seven carry the weight, and both were checked by
 full-text search rather than by reading:
 
 - The **advanced hunting overview** contains **zero occurrences of "Copilot"** and **zero of
   "prompt"**.
-- The **advanced-hunting schema table list** - the page that enumerates every advanced hunting
-  table - contains exactly **one** occurrence of "Copilot", and it refers to Copilot **Studio**
-  agents: the `AIAgentsInfo` entry, described there as "Information about AI agents created with
+- The **advanced-hunting schema table list** - the page that enumerates every native Defender XDR
+  advanced hunting table - contains exactly **one** occurrence of "Copilot", and it refers to
+  Copilot **Studio** agents: the `AIAgentsInfo` entry, described there as "Information about AI
+  agents created with
   Microsoft Copilot Studio, including agent configuration and ownership details". **No entry in
   that enumeration is a Copilot chat-prompt table.**
 
@@ -163,7 +179,8 @@ overview still contains zero occurrences of "Copilot" and zero of "prompt", at a
 updated on" date of 2026-08-07. The schema table list still contains exactly one occurrence of
 "Copilot", still the `AIAgentsInfo` entry and still describing Copilot **Studio** agents in the
 words quoted above, at a rendered "Last updated on" date of 2026-07-27. **Both figures were
-re-derived against the live pages on 2026-09-20 and both still reproduce**, and on each of these
+re-derived against the live pages on 2026-09-20 and both still reproduce**, as they did again on
+2026-09-27 at the same two rendered dates, and on each of these
 two pages the rendered date and the `ms.date` field agree, so neither figure distinguishes them.
 No entry in that enumeration is described as carrying Microsoft 365 Copilot user prompts or chat
 interactions. The re-read is recorded because this is the claim the most rests
@@ -172,9 +189,9 @@ are searches of the page **text**, which is the same instrument as the 2026-08-1
 absence claim of this kind can rest on.
 
 That is a stronger form of the evidence than "we looked and did not see it": the schema list is an
-enumeration of the full table set, so an absence from it carries the same weight as the positive
-enumeration argued for in 3.2 below. What exists is two adjacent surfaces on different release
-states, and this pack builds on both:
+enumeration of the full native table set, so an absence from it carries the same weight as the
+positive enumeration argued for in 3.2 below. What exists is two adjacent surfaces on different
+release states, and this pack builds on both:
 
 - **Prompt injection carried in email**, through Microsoft Defender for Office 365. It reaches
   advanced hunting as a detection-technology value, and its page carries no preview qualifier -
@@ -192,10 +209,28 @@ that is a correction to file, not an argument.
 
 **One adjacent surface that is easy to mistake for a refutation.** The Sentinel `CopilotActivity`
 table does carry Copilot audit activity, including a `CopilotInteraction` record type. It is a
-Log Analytics audit table populated through the Office Management API - not a Defender advanced
-hunting table - and Microsoft does not document that its `LLMEventData` column carries prompt text.
-[MSD-007](../detections/sentinel/MSD-007-copilot-settings-change.md) states this in its opening
-lines for that reason.
+Log Analytics audit table populated through the Office Management API - not a native Defender XDR
+advanced hunting table - and Microsoft does not document that its `LLMEventData` column carries
+prompt text. [MSD-007](../detections/sentinel/MSD-007-copilot-settings-change.md) states this in its
+opening lines for that reason. Advanced hunting in the Defender portal can query a connected
+Microsoft Sentinel workspace: once one is connected, "you can find many of that workspace's tables
+organized by solution after the Microsoft Defender tables under the Schema tab", on the page for
+[advanced hunting with Microsoft Sentinel data](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-microsoft-defender),
+read 2026-09-27, which does not name `CopilotActivity`. So the claim above is about the native
+Defender XDR schema, and reaching this table from advanced hunting would not change what the table
+documents.
+
+A second thing that is easy to mistake for a refutation is a filter used in queries published
+outside Microsoft: `CloudAppEvents | where ActionType == "CopilotInteraction"`. No Microsoft Learn
+page read for this pack documents that value for `CloudAppEvents.ActionType`; the Purview page on
+Copilot audit logs documents `CopilotInteraction` as the `Operation` of a Copilot audit record,
+which is a different field. The
+[`CloudAppEvents` reference](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudappevents-table),
+re-read 2026-09-27, lists no `ActionType` values, and no page the Microsoft Learn site search
+returned for the two terms on that date carries both. The
+[advanced hunting schema-tables page](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-schema-tables)
+says the in-portal schema reference lists "possible values in the `ActionType` column", read the
+same day, so a tenant is where that value can be checked.
 
 ### 3.2 "Defender for Cloud AI threat protection does not cover Microsoft 365 Copilot or GitHub Copilot"
 
@@ -225,19 +260,19 @@ predicate, or a projected-but-never-filtered column - never by a guess.
 |---|---|---|---|
 | `DetectionMethods` serialisation | MSD-001, MSD-002 | Types the column `string`; publishes no value format | `has`, with a documented operator-selection step |
 | `LatestDeliveryAction` / `LatestDeliveryLocation` value lists | MSD-002 | Columns and descriptions published; no value lists | Projected, never filtered on |
-| `McpServers` internal shape | MSD-003, MSD-004 | `dynamic`; no field names published | String-form test, never indexed into |
+| `McpServers` internal shape | MSD-003, MSD-004 | `dynamic`; no field names on the table reference (local-agent queries on another page read `name`, `type`, `endpoint`) | String-form test, never indexed into |
 | `Guardrails` internal shape | MSD-004 | `dynamic`; no field names published | String-form test against explicit empty forms |
-| `DeclaredTools` internal shape | MSD-004 | `dynamic`; no field names published | String-form test |
+| `DeclaredTools` internal shape | MSD-004 | `dynamic`; no field names on the table reference (local-agent queries on another page read `name`, `type`, `endpoint`) | String-form test |
 | `Endpoints` internal shape | MSD-004 | `dynamic`; describes what it holds, publishes no field names | String-form test in the posture rollup, never indexed into |
 | `Availability` value list | MSD-003, MSD-004 | Describes the column; enumerates no values | Projected, never filtered on |
-| `AgentsInfo` emission cadence | MSD-003, MSD-004 | Not documented at all | 30-day window plus a cadence-measuring verification step |
+| `AgentsInfo` emission cadence | MSD-003, MSD-004 | Not on the table reference; the Defender for Endpoint local-agents page says it "adds a record each time an agent profile is updated", with no schedule stated | 30-day window plus a cadence-measuring verification step |
 | Which `SecurityAlert` column carries the alert identifier | MSD-005 | Column names published with **empty description cells** | Matches on both `AlertName` and `AlertType` |
 | `ConditionalAccessStatus` values | MSD-006 | "Status of all the conditionalAccess policies related to the sign-in" - no value list | Grouped by, never filtered on; operator completes the filter. The page still publishes no value list, so the handling stands |
 | `ResultType` stored values | MSD-006 | Describes semantics ("Success or Failure"), not stored strings | Not filtered on. A tenant stored numeric codes rather than the described words on 2026-08-24, which is the one of these three worth reading before you write an equality filter on the column |
 | `Agent` column shape | MSD-006 | One sentence: "Details of agentic sign-in." | Projected, never filtered on. A tenant returned a JSON object on 2026-08-24; the page still publishes no shape |
 | `ConditionalAccessPolicies` / `LocationDetails` serialisation | MSD-006 | Typed `string`, with composite descriptions and no published value format | Flagged Provisional; inspect before filtering. A tenant returned a JSON array and a JSON object respectively on 2026-08-24; the page still publishes no format, so the label stands |
 | `CopilotActivity.RecordType` full value set | MSD-007 | Two examples behind an "e.g." | Step 2 is an **exclusion**, so a new record type appears without a rule change |
-| `LLMEventData` contents | MSD-007 | "Parsed LLM event data" - no schema | Not read; the file forbids building prompt detection on it |
+| `LLMEventData` contents | MSD-007 | "Parsed LLM event data" - no schema | Not read; the file forbids building prompt-text detection on it |
 | `BehaviorInfo.ActionType` values for AI-agent protection | MSD-008 | "Type of behavior" - no value list | Discovery query first; operator completes the filter |
 | `ServiceSource` / `DetectionSource` values | MSD-008 | Described, not enumerated | Grouped by in discovery, never filtered on |
 | `BehaviorInfo.Categories` serialisation | MSD-008 | Types the column, publishes no value format | Grouped by in discovery, never filtered on; one environment returned a serialised array string, so the rollup keys on combinations |
@@ -245,6 +280,19 @@ predicate, or a projected-but-never-filtered column - never by a guess.
 **Eighteen rows, across eight detections.** The unit is deliberate: this table has one row per
 element-and-handling, so a row covering two columns is one row here and two elements there. Three
 rows do that, which is why the row count and any element count differ.
+
+The "never indexed into" handling guards against a failure no Kusto reference page this pack read
+states. On this pack's reading, reading a key that a `dynamic` value does not carry returns null
+rather than an error, so a guessed key path yields empty values instead of a failed query. The
+[dynamic data type page](https://learn.microsoft.com/en-us/kusto/query/scalar-data-types/dynamic),
+read 2026-09-27, says only that "Accessing a sub-object of a `dynamic` value yields another
+`dynamic` value", no other page read that day says what a missing key yields, and none of this
+pack's runs has tested it, so it is recorded as this pack's reading rather than as documented or
+observed. Where a key's absence has to be told apart from a null value,
+[`bag_has_key()`](https://learn.microsoft.com/en-us/kusto/query/bag-has-key-function) returns "True
+or false depending on if the key exists in the bag", read 2026-09-27; its "Applies to" line names
+the same four products every Kusto reference page names, which says nothing about whether it runs in
+Defender XDR advanced hunting.
 
 **How the per-file Provisional counts in the detection headers are derived**, because they are
 counted on a different unit again and will not add up to the row count above. A header count is the
@@ -498,8 +546,14 @@ Stated plainly, because the gap is the reason the release gate exists.
   for AI agent activity - **the only documented surface in this evidence set that records what an
   agent did.** `BehaviorInfo`, which MSD-008 reads, also carries runtime records, but they are
   protection audit and block events rather than the agent's own actions, so it answers "what did a
-  control do" and not "what did the agent do". `CloudAppEvents` `ActionType` values for agent
-  activity are not documented, so a narrowing filter would be a guess.
+  control do" and not "what did the agent do". Microsoft documents five `CloudAppEvents`
+  `ActionType` values for agent activity on the
+  [Agent 365 observability concepts page](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/observability-concepts),
+  `ms.date` 2026-09-02, read 2026-09-27, without saying which span type produces which.
+
+  > **Correction, 2026-09-27.** An earlier version of this paragraph said `CloudAppEvents`
+  > `ActionType` values for agent activity are not documented, so a narrowing filter would be a
+  > guess. The page above documents five. `CHANGELOG.md` is the record.
 
   Two detections here tell you what agents are **configured** to do - MSD-003 and MSD-004, both on
   `AgentsInfo` - and none tells you what any agent **did**. That is a gap in coverage rather than

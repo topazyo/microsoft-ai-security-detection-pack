@@ -5,7 +5,7 @@
 | **ID** | MSD-003 |
 | **Deployment target** | Microsoft Defender XDR advanced hunting |
 | **Primary table** | `AgentsInfo` |
-| **Status** | **Public Preview**. Two Provisional elements below: the internal shape of `McpServers`, and the `Availability` value list. |
+| **Status** | **Public Preview**. Two Provisional elements below: the internal shape of `McpServers`, and the `Availability` value list. Two column names are Requires further validation: `AgentName` and `EntraAgentId`. |
 | **Last verified** | 2026-08-15 |
 | **MITRE ATLAS** | `AML.T0010.005` AI Supply Chain Compromise: AI Agent Tool · `AML.T0011.002` User Execution: Poisoned AI Agent Tool |
 | **OWASP LLM 2026** | LLM03:2026 Excessive Agency · LLM04:2026 Supply Chain |
@@ -41,8 +41,11 @@ stamp 2026-06-03). The page title reads **`AgentsInfo (Preview)`**.
 | `McpServers` | `dynamic` | The Model Context Protocol (MCP) servers connected to the agent, including server URLs and credential configuration |
 | `Guardrails` | `dynamic` | Guardrails attached to the agent and their coverage |
 
-> **Provisional: the internal shape of `McpServers` is not documented.** Learn types it `dynamic`
-> and says what it holds, but publishes no field names inside it. The query below therefore tests
+> **Provisional: the internal shape of `McpServers` is not documented.** The table reference types
+> it `dynamic` and says what it holds, but publishes no field names inside it. The Defender for
+> Endpoint page on discovering local AI agents reads `name`, `type` and `endpoint` from it in
+> queries scoped to `Platform == "LocalAgents"` (read 2026-09-27), which says nothing about other
+> platforms. The query below therefore tests
 > the column's string form rather than indexing into it. **Do not write a query that indexes into
 > this column until you have inspected it in your own workspace** - verification step 2 below.
 >
@@ -62,6 +65,21 @@ stamp 2026-06-03). The page title reads **`AgentsInfo (Preview)`**.
 
 > **Provisional: `Availability` has no documented value list.** Learn describes what the column
 > means but does not enumerate its values, so the query projects it and never filters on it.
+
+> Requires further validation: the names `AgentName` and `EntraAgentId`. The table reference quoted
+> above lists both, re-read 2026-09-27 at an unchanged page stamp. Two later Microsoft Learn pages
+> name `AgentName` differently, and one of them also names `EntraAgentId` differently. The Azure
+> Monitor Logs reference for `AgentsInfo` lists `Name`
+> and `EntraAgentID` with the same descriptions (`ms.date` 2026-07-31). The Defender for Endpoint
+> page on discovering local AI agents queries this table in advanced hunting with `Name` and states
+> that "The columns that carry local AI agent data are `AgentId`, `Name`, `Version`,
+> `PublishedStatus`, `LifecycleStatus`, `LastUpdatedDateTime`, `McpServers`, `DeclaredTools`, and
+> `RawAgentInfo`" (`ms.date` 2026-09-16). Both were read 2026-09-27. Microsoft's own sources
+> conflict, which is what that label means in the canonical legend, and for `AgentName` they
+> conflict on this file's own deployment target. The queries keep the names this table's reference
+> publishes. A wrong name fails loudly, because a reference to a column the table does not carry is
+> a syntax error, so `column_ifexists()` is deliberately not used: it would turn that error into an
+> empty column. Verification step 1 settles which names your workspace carries.
 
 > **Why the query does not use `isnotempty()` on its own, and why that matters more than it looks.**
 > **The `isempty()` reference settles it outright, in its own example table on the page this file
@@ -134,8 +152,10 @@ AgentsInfo
 `summarize arg_max(Timestamp, *) by AgentId` reduces the table to one current row per agent.
 `AgentsInfo` is an inventory table: without that collapse you count snapshots, not agents.
 
-**The window is a load-bearing choice, not a default.** Microsoft Learn does not document whether
-`AgentsInfo` writes rows on a schedule or only on change. If rows are change-driven, an agent whose
+**The window is a load-bearing choice, not a default.** The `AgentsInfo` table reference does not
+document whether the table writes rows on a schedule or only on change. The Defender for Endpoint
+page on discovering local AI agents states that "AgentsInfo adds a record each time an agent profile
+is updated", which names one trigger and no schedule. If rows are change-driven, an agent whose
 configuration has been stable for longer than the window produces no row at all and **disappears
 from the result** - and a stable, broadly deployed agent is exactly the one this pack most wants you
 to see. Verification step 5 establishes which behaviour your workspace has. Until it does, treat any
@@ -310,7 +330,7 @@ deploys one detection may never open the checklist.
   described as: "Contains inventory and configuration details for AI agents, including agent
   identity, platform, ownership, and metadata."
 
-### Prerequisite - what has to be true for this table to hold anything
+### Prerequisite - what has to be true for this table to hold Agent 365 agents
 
 Per the same feature page, verbatim: agent observability requires "the Microsoft 365 app connector
 to collect Agent 365 observability data for AI agent actions", and "Agents built with Microsoft
@@ -318,13 +338,29 @@ Copilot Studio, Microsoft Foundry, and declarative agents built with the Microso
 Builder send observability data to Microsoft 365 by default." For the rest, verbatim from a re-read
 of the same page on 2026-08-18: "For AI agents built on other platforms, enable observability using
 the Microsoft Agent 365 SDK, as described in the Agent 365 development lifecycle documentation."
+Local AI agents reach the table through Defender for Endpoint instead: its page on discovering local
+AI agents says "You don't need additional deployment, configuration, or scripts beyond the device
+onboarding requirements", read 2026-09-27.
+
+> **Correction, 2026-09-27.** An earlier version of this heading said what has to be true for this
+> table to hold anything. The Defender for Endpoint page on discovering local AI agents reports local
+> AI agents in it and names no connector among its prerequisites. `CHANGELOG.md` is the record.
 
 ## What this detection cannot see
 
-- **Any MCP server not attached to an agent that emits Agent 365 observability data.** This table
-  reflects agents managed through Microsoft Agent 365, per the prerequisites above. It is not a
-  tenant-wide MCP inventory, and a developer-configured MCP server on a workstation is outside it.
+- **Any MCP server this table does not report in `McpServers`.** The table reflects agents managed
+  through Microsoft Agent 365, per the prerequisites above, and local AI agents that Defender for
+  Endpoint discovers on onboarded devices. It is not a tenant-wide MCP inventory. For a local agent,
+  Microsoft reports remote MCP servers in `McpServers` and local ones inside `RawAgentInfo`, and
+  states that "Local MCP servers are reported only in `AgentsInfo`". This query reads `McpServers`
+  only, so a local MCP server on a workstation is outside its result even where the table carries it.
   Confirm your own coverage rather than assuming it.
+
+  > **Correction, 2026-09-27.** An earlier version of this bullet said a developer-configured MCP
+  > server on a workstation is outside this table. On a device where Defender for Endpoint discovers
+  > local AI agents it is inside it: a local MCP server in `RawAgentInfo`, which this file does not
+  > read, and a remote one configured for a local agent in `McpServers`, which it does.
+  > `CHANGELOG.md` is the record.
 - **What the MCP server actually does.** The column holds configuration, not behaviour. Tool
   invocation at runtime is a different question - see MSD-008.
 - **Whether the server is allowlisted.** This pack does not read enterprise MCP allowlist state,
@@ -335,8 +371,10 @@ the Microsoft Agent 365 SDK, as described in the Agent 365 development lifecycle
   how a non-reporting platform fills it, so the query cannot distinguish "no server" from
   "not reported".
 - **Agents that have not changed inside the query window, if `AgentsInfo` writes rows only on
-  change.** Learn does not document the emission cadence. This is a limit on the *population* the
-  query sees rather than on what it can observe about any agent, which makes it the easiest one to
+  change.** The table reference does not document the emission cadence, and the Defender for
+  Endpoint page names profile updates as one trigger without a schedule. This is a limit on the
+  *population* the query sees rather than on what it can observe about any agent, which makes it the
+  easiest one to
   miss. Verification step 5.
 
 ## False-positive guidance
@@ -365,11 +403,16 @@ the Microsoft Agent 365 SDK, as described in the Agent 365 development lifecycle
    does not carry, or which the output types differently. **A column the output carries and the schema
    table does not is not a mismatch**, because the schema table is a deliberate subset. That outcome is
    worth more than a clean run. Then `AgentsInfo | take 10` to confirm it returns rows; if it does
-   not, check the Microsoft 365 app connector prerequisite above before concluding you have no agents.
+   not, check the Microsoft 365 app connector prerequisite above before concluding you have no agents,
+   and check it just the same if every row it returns has `Platform == "LocalAgents"`.
+   Then record which names your workspace carries for the two columns marked Requires further
+   validation: `AgentsInfo | getschema | where ColumnName in ("AgentName", "Name", "EntraAgentId",
+   "EntraAgentID") | project ColumnName`. The case-sensitive `in` is deliberate, because two of the
+   four names differ only by case.
 2. Inspect the column shape before writing anything that indexes into it:
    `AgentsInfo | extend R = tostring(McpServers) | where R !in~ ("", "[]", "{}", "null") | take 5
-   | project AgentId, McpServers`. Read the JSON. Field names are not documented and may differ from
-   what you expect.
+   | project AgentId, McpServers`. Read the JSON. Field names are not documented on the table
+   reference and may differ from what you expect.
    **Exactly two things from this column are findings: its field names, and the empty forms your
    platforms emit for it.** This step gives you the field names; **step 3 below gives you the empty
    forms for this column**, and MSD-004 verification step 2 enumerates them for `Guardrails`,
@@ -437,7 +480,10 @@ the Microsoft Agent 365 SDK, as described in the Agent 365 development lifecycle
 
 ## Sources
 
-- [AgentsInfo table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-agentsinfo-table) - last verified 2026-08-15
+- [AgentsInfo table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-agentsinfo-table) - last verified 2026-08-15, re-read 2026-09-27 for the `AgentName` and `EntraAgentId` rows, which are unchanged, at an unchanged rendered date of 2026-06-03
+- [Azure Monitor Logs reference - AgentsInfo (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/agentsinfo) - read 2026-09-27, `ms.date` 2026-07-31, for the `Name` and `EntraAgentID` rows the Requires further validation note sets against this file's schema table
+- [Discover local AI agents with Microsoft Defender for Endpoint (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-endpoint/discover-local-ai-agents) - read 2026-09-27, `ms.date` 2026-09-16, for its advanced-hunting queries on `AgentsInfo`, which use `Name` and read `name`, `type` and `endpoint` from `McpServers`, for the sentence listing the columns that carry local AI agent data, for where it reports a local agent's MCP servers, for its sentence on when the table adds a record, and for its prerequisites
+- [Handle advanced hunting errors (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors) - read 2026-09-27, `ms.date` 2026-05-18, for the syntax-error row, whose cause includes "references to nonexistent operators, columns, functions, or tables"
 - [Detect and investigate threats to AI agents using Microsoft Defender (Preview) (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/security-for-ai/ai-agent-detection-protection) - last verified 2026-08-15, **re-read 2026-09-20, when the rendered "Last updated on" date read 2026-09-03**, and Microsoft's name for the product in the observability sentence quoted above read `Microsoft Copilot Agent Builder` rather than the form this file carried before that read. **The page's `ms.date` read 2026-08-07 on that same read**, so the two fields disagree here and the date above is the rendered one
 - [Advanced hunting schema tables (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-schema-tables) - last verified 2026-08-15, for the `AIAgentsInfo` listing noted above
 - [`isempty()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/isempty-function) - last verified 2026-08-15, for the empty-`dynamic` behaviour the query predicate works around, and re-read 2026-08-19 for the published example table quoted above. **Each date is kept rather than collapsed**, because each later read is what added the material recorded against it

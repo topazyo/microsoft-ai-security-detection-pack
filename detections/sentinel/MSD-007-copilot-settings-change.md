@@ -17,15 +17,18 @@
 "Parsed LLM event data (for copilot different RecordTypes)" and **does not document that it carries
 prompt text**.
 
-**Do not build prompt-injection detection on this table.** There is no documented advanced-hunting
+**Do not build prompt-text detection on this table**, meaning detection that matches words or
+patterns in what a user typed. There is no documented advanced-hunting
 surface for Microsoft 365 Copilot chat prompts - a claim scoped to the pages listed in
 [`docs/verification-methodology.md`](../../docs/verification-methodology.md) section 3.1 - and this
-table is a Sentinel Log Analytics audit stream rather than an advanced-hunting table in any case.
-A pack that treated it as a prompt-hunting surface would be wrong in exactly the way this pack
-exists to avoid.
+table is a Sentinel Log Analytics audit stream rather than a native Defender XDR advanced-hunting
+table in any case. A pack that treated it as a prompt-hunting surface would be wrong in exactly the
+way this pack exists to avoid. That does not reach a classifier verdict: Microsoft documents a
+per-message `JailbreakDetected` flag in Copilot audit records, and Microsoft's own Sentinel analytic
+rule reads it from `LLMEventData`. This file ships no query on it.
 
-What this table supports is configuration and access monitoring: who changed Copilot settings, from
-where, and when.
+What this file uses the table for is configuration and access monitoring: who changed Copilot
+settings, from where, and when.
 
 ## Status - why this row is not labelled GA or Preview
 
@@ -240,11 +243,26 @@ CopilotActivity
 
 ## What this detection cannot see
 
-- **Prompt content, and therefore prompt injection.** Stated at the top of this file because it is
-  the assumption most likely to be made. `LLMEventData` is not documented as carrying prompt text.
+- **Prompt content, and therefore prompt-text matching.** Stated at the top of this file because it
+  is the assumption most likely to be made. `LLMEventData` is not documented as carrying prompt text.
 - **Microsoft 365 Copilot chat interactions in a form that supports hunting the prompt.** The
-  `CopilotInteraction` record type exists, but Learn documents neither its contents nor the shape of
-  `LLMEventData` for it.
+  `CopilotInteraction` record type exists, and Microsoft Learn documents what a Copilot audit record
+  holds: "These audit records contain details about which user interacted with Copilot, when the
+  interaction took place, and where it occurred. Audit records also include references to files,
+  sites, or other resources Copilot, Cowork, and AI applications accessed to generate responses to
+  user prompts." The property table on that page, which it introduces as "some of the common
+  properties included in audit logs", carries per-message flags and no property holding the text of
+  a prompt or a response. The `CopilotActivity` table reference publishes no schema for
+  `LLMEventData`. Microsoft's Azure-Sentinel
+  sample row for this table carries that record inside `LLMEventData`, with a `Messages` array whose
+  entries hold `JailbreakDetected`, and the Azure Monitor example-queries page for this table reads
+  that flag through `LLMEventData.Messages`, in a query whose first line names a table
+  `LLMActivity` rather than `CopilotActivity`.
+
+  > **Correction, 2026-09-27.** An earlier version of this bullet said Learn documents neither the
+  > record's contents nor the shape of `LLMEventData`. The first half was wrong: the Purview page on
+  > Copilot audit logs documents what the records hold. The second half stands for the table
+  > reference, which publishes no schema for the column. `CHANGELOG.md` is the record.
 - **Any Copilot surface not covered by the Office Management API.** Per the connector reference:
   "This connector uses the Office Management API to get your Microsoft Copilot audit logs."
 - **Which product a row belongs to, without reading `Workload`.** The connector spans Microsoft
@@ -255,8 +273,9 @@ CopilotActivity
   elsewhere and fail the same way for different reasons: MSD-005 needs Defender for Cloud alerts to
   be streaming, MSD-006 needs the service-principal sign-in diagnostic category to be exported, and
   MSD-003 and MSD-004 need the Microsoft 365 app connector to be collecting Agent 365 observability
-  data, which MSD-003 quotes from Learn. **Confirm the source in each case before reading an empty
-  result as a clean one**, rather than counting how many detections that applies to. Verification
+  data for their Agent 365 agents, which MSD-003 quotes from Learn. **Confirm the source in each
+  case before reading an empty result as a clean one**, rather than counting how many detections
+  that applies to. Verification
   step 1.
 - **Connector state itself.** No query in this pack reads whether the connector is configured; the
   table is the only thing these queries see. An empty result therefore does not discriminate a
@@ -302,10 +321,14 @@ CopilotActivity
 3. Inspect `LLMEventData` on a sample of rows and record what it actually contains, per
    `RecordType`. **Do this before writing any query that reads inside it**, and re-read this file's
    opening warning before drawing a conclusion from what you find. **The values you write down from
-   `LLMEventData` stay in your environment.** They are your own tenant's data, and Learn describes
-   the column without documenting its shape, so nothing tells you in advance what your own rows will
-   carry there. What a public issue or a verification report wants from here is the `RecordType` a
-   field appears under and the field's name, and nothing about the values inside it.
+   `LLMEventData` stay in your environment.** They are your own tenant's data, and the table
+   reference describes the column without documenting its shape, so what your own rows carry there
+   is yours to establish. What a public issue or a verification report wants from here is the
+   `RecordType` a field appears under and the field's name, and nothing about the values inside it.
+
+   > **Correction, 2026-09-27.** An earlier version of this step said nothing tells you in advance
+   > what your rows carry in `LLMEventData`. The Purview page on Copilot audit logs and the Azure
+   > Monitor example-queries page for this table show part of it. `CHANGELOG.md` is the record.
 4. Confirm the table's plan in your workspace (Analytics, Basic, or Auxiliary) and confirm that a
    scheduled analytics rule can run against it on that plan.
 5. Make one Copilot settings change deliberately in a lab tenant and confirm it appears with the
@@ -342,10 +365,14 @@ CopilotActivity
 
 ## Sources
 
-- [CopilotActivity table (Azure Monitor Logs reference, Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/copilotactivity) - last verified 2026-08-15
+- [CopilotActivity table (Azure Monitor Logs reference, Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/copilotactivity) - last verified 2026-08-15, re-read 2026-09-27 (`ms.date` 2026-07-27) for the `LLMEventData` row, which is unchanged
 - [Find your Microsoft Sentinel data connector (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/sentinel/data-connectors-reference) - last verified 2026-08-15
 - [`==` (equals), case-sensitive (Kusto query reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/equals-cs-operator) - read 2026-08-22 for step 3's case sensitivity
 - [`!=` (not equals), case-sensitive (Kusto query reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/not-equals-cs-operator) - read 2026-08-22 for step 2's case sensitivity
 - [`auditLogQuery` resource type (Microsoft Graph reference, Microsoft Learn)](https://learn.microsoft.com/en-us/graph/api/resources/security-auditlogquery) - read 2026-09-19 for verification step 5's description of the resource and its filter parameters. **Re-read 2026-09-20: the page publishes no permission**, which is why step 5 marks the separate-grant point as this pack's reading rather than as a documented one
 - [`security: runHuntingQuery` (Microsoft Graph reference, Microsoft Learn)](https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery) - read 2026-09-19 for verification step 5's separate advanced-hunting scope
+- [Audit logs for Copilot and AI applications (Microsoft Purview, Microsoft Learn)](https://learn.microsoft.com/en-us/purview/audit-copilot) - read 2026-09-27, `ms.date` 2026-08-26, for the description of what a Copilot audit record holds, its common-properties table, and the `JailbreakDetected` property of `Messages`
+- [Example log table queries for CopilotActivity (Azure Monitor, Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/queries/copilotactivity) - read 2026-09-27, `ms.date` 2026-02-09, for the query that reads `JailbreakDetected` through `LLMEventData.Messages` and opens with the table name `LLMActivity`
+- [`Sample Data/MicrosoftCopilot_IngestedLogs.json` (Azure/Azure-Sentinel on GitHub, pinned commit)](https://github.com/Azure/Azure-Sentinel/blob/b168312ec8044a568448b1fc27d7d121166c998f/Sample%20Data/MicrosoftCopilot_IngestedLogs.json) - read 2026-09-27, for the `CopilotInteraction` row whose `LLMEventData` carries `Messages[].JailbreakDetected`. Microsoft-authored sample data rather than Microsoft Learn, so it corroborates and sets no status
+- [`CopilotJailbreakAttempt.yaml` (Azure/Azure-Sentinel on GitHub, Microsoft Copilot solution, pinned commit)](https://github.com/Azure/Azure-Sentinel/blob/3902c32b67c0220d59e109fc31235626dda6585e/Solutions/Microsoft%20Copilot/Analytic%20Rules/CopilotJailbreakAttempt.yaml) - read 2026-09-27, for the analytic rule that reads `Messages[0].JailbreakDetected` from `LLMEventData`. The solution's own metadata names Microsoft as its author. Not Microsoft Learn, for the same reason as the entry above
 - MITRE ATLAS technique IDs read from the distributed `atlas-data` dataset, `version: 5.6.0` (release tag `v2026.07`) - verified 2026-08-15
