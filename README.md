@@ -292,8 +292,9 @@ which is the largest single block of other people's material in this pack.
 
 > **One thing worth knowing before you reuse the quoted material.** Microsoft's documentation is not
 > published under a single licence, and which licence reaches a quotation depends on which repository
-> the page is published from. Four repositories are in play here. Each licence file below was read on
-> 2026-08-17:
+> the page is published from. Four of the repositories in play here were checked, and each licence
+> file below was read on 2026-08-17. Pages this pack quotes from other repositories, among them the
+> Microsoft Graph, Purview and Agent 365 documentation, are not covered by this note:
 >
 > - [`MicrosoftDocs/defender-docs`](https://github.com/MicrosoftDocs/defender-docs) - `LICENSE` is
 >   the **MIT License**.

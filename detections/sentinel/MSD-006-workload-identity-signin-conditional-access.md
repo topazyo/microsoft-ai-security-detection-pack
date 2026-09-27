@@ -108,7 +108,11 @@ and for the same reason: a reader diffing this table against the page should fin
 > possible values are: `success`, `failure`, `notApplied`, and `unknownFutureValue`."
 >
 > **What is genuinely undocumented is the link between the two.** No page this pack has found
-> states that the Log Analytics column stores exactly those strings, in that casing. **The shipped
+> states that the Log Analytics column stores exactly those strings, in that casing. The gap is
+> narrower than that reads on its own: the Log Analytics reference for the sibling `SigninLogs`
+> table publishes three of those strings, without `unknownFutureValue`, for its own
+> `ConditionalAccessStatus` column, "Possible values: success, failure, or notApplied", while this
+> table's reference, re-read 2026-09-27, still publishes none. **The shipped
 > query therefore still does not filter on a status value** - it groups by the column so you can
 > read what your own environment stores, and the narrowing filter is one you complete afterwards.
 > **The reason is no longer that guessing would invent schema; it is that the documented
@@ -118,7 +122,9 @@ and for the same reason: a reader diffing this table against the page should fin
 > reference](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/aadserviceprincipalsigninlogs)
 > and the [Microsoft Graph `signIn` resource
 > type](https://learn.microsoft.com/en-us/graph/api/resources/signin?view=graph-rest-1.0), both read
-> 2026-09-19.
+> 2026-09-19, and the [`SigninLogs` table
+> reference](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/signinlogs),
+> read 2026-09-27.
 
 > **Provisional: `ResultType`.** Learn describes it as "The result of the sign-in operation can be
 > Success or Failure", which describes the semantics rather than the stored strings. The shipped
@@ -415,7 +421,8 @@ AADServicePrincipalSignInLogs
 
 ## Sources
 
-- [AADServicePrincipalSignInLogs table (Azure Monitor Logs reference, Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/aadserviceprincipalsigninlogs) - last verified 2026-08-15, re-read 2026-08-19 to confirm that the "Th identifier" opening on `FederatedCredentialId` is Microsoft's own. **Each date is kept rather than collapsed**, because each later read is what added the material recorded against it
+- [AADServicePrincipalSignInLogs table (Azure Monitor Logs reference, Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/aadserviceprincipalsigninlogs) - last verified 2026-08-15, re-read 2026-08-19 to confirm that the "Th identifier" opening on `FederatedCredentialId` is Microsoft's own, and re-read 2026-09-27 to confirm that its `ConditionalAccessStatus` row still publishes no value list. **Each date is kept rather than collapsed**, because each later read is what added the material recorded against it
+- [SigninLogs table (Azure Monitor Logs reference, Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/signinlogs) - read 2026-09-27, `ms.date` 2026-08-27, for its `ConditionalAccessStatus` row, which publishes "Possible values: success, failure, or notApplied" for that table's column. It narrows the `ConditionalAccessStatus` note above without settling what this table stores
 - [Conditional Access for workload identities (Microsoft Learn)](https://learn.microsoft.com/en-us/entra/identity/conditional-access/workload-identity) - last verified 2026-08-15, re-read 2026-08-17 for the group-assignment limit quoted above, re-read 2026-08-18 for the service-principal object-ID instruction verification step 5 carries, and re-read 2026-08-19 to re-run the preview search recorded above. **Each date is kept rather than collapsed**, because each later read is what added the material recorded against it
 - [Conditional Access for agents (Microsoft Learn)](https://learn.microsoft.com/en-us/entra/identity/conditional-access/agent-id) - last verified 2026-08-15; **this is the page carrying the API-key bypass sentence**
 - [Conditional Access: Users, groups, agents, and workload identities (Microsoft Learn)](https://learn.microsoft.com/en-us/entra/identity/conditional-access/concept-conditional-access-users-groups) - last verified 2026-08-15

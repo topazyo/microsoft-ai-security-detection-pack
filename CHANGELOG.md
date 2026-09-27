@@ -60,10 +60,11 @@ The date on this entry moves when the release gate is met, and no run has met it
   zero rows, and cannot tell that from a clean environment. **A reference to a nonexistent column
   is not a zero-row result.** Microsoft classes it as a syntax error and the query never runs:
   "The query contained unrecognized names, including references to nonexistent operators, columns,
-  functions, or tables", with `'project' operator: Failed to resolve scalar expression named 'x'`
-  given as an example message
+  functions, or tables", which is the cause the page gives for syntax errors, with
+  `A recognition error occurred.` as that row's example message
   ([advanced hunting errors](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors),
-  read 2026-09-21).
+  read 2026-09-21, re-read 2026-09-27). The 2026-09-27 entry below records what this sentence
+  said before.
 
   **The corrected passage names the failure this pack is actually built against**: a real column
   filtered on a guessed value, or a placeholder left in place, which does return zero rows and does
@@ -190,6 +191,38 @@ The date on this entry moves when the release gate is met, and no run has met it
     after the scope was set.
 
   No query changed.
+- **2026-09-27 - This file paired the syntax-error cause with the semantic-error example.** The
+  2026-09-21 entry above quoted the cause the advanced hunting errors page gives for syntax errors
+  and then gave `'project' operator: Failed to resolve scalar expression named 'x'` as its example.
+  On that page, re-read 2026-09-27 (`ms.date` 2026-05-18), that message is the example for semantic
+  errors, and the syntax-error row's example is `A recognition error occurred.`. The entry now gives
+  the matching example. Its conclusion is unaffected, because both kinds of error stop the query.
+- **2026-09-27 - MSD-006 cites a narrower gap on `ConditionalAccessStatus` values.** The Log
+  Analytics reference for the sibling `SigninLogs` table publishes three of the four strings
+  Microsoft Graph documents, "Possible values: success, failure, or notApplied", for its own
+  `ConditionalAccessStatus` column (`ms.date` 2026-08-27, read 2026-09-27), while the
+  `AADServicePrincipalSignInLogs` reference, re-read the same day, still publishes none. MSD-006's
+  note now says so. The Provisional label, the placeholder and the shipped
+  query are unchanged, because the published strings belong to a different table.
+- **2026-09-27 - MSD-008 records a published-agents limit that Microsoft states for threat
+  detection.** The AI-agent detection page states that "Threat detection is supported only for
+  published Microsoft Foundry agents" (re-read 2026-09-27, `ms.date` 2026-08-07). The real-time
+  protection page, which describes Prompt Shields block events being recorded as behaviours, states
+  no such limit (`ms.date` 2026-07-01, read 2026-09-27). MSD-008 now quotes the sentence with its
+  own scope, records that whether block events from unpublished agents reach `BehaviorInfo` is not
+  established, and suggests a published agent for its positive control. No status label and no
+  query changed.
+- **2026-09-27 - MSD-002 cites Microsoft-authored queries that use its observed spelling.** Queries
+  in the Microsoft Defender XDR solution of Microsoft's Azure-Sentinel repository compare
+  `DeliveryLocation` with `"Junk folder"` and `"Inbox/folder"`, read 2026-09-27 at pinned commits.
+  That corroborates the spelling MSD-002 carries as observed. It is not a Microsoft Learn citation,
+  so the value stays in the observed class and both of its point-of-use labels are unchanged.
+- **2026-09-27 - The README's licence note no longer implies it covers every quoted page.** It said
+  four documentation repositories are in play and listed their licence files. This version quotes
+  pages from the Purview and Agent 365 documentation, and MSD-006 has quoted the Microsoft Graph
+  documentation since 2026-09-19; none of those is among the four. The note now says four were
+  checked and that pages from other repositories are not covered by it. No licence file was read
+  for this change.
 ### Verification dates in this version
 
 - **2026-08-15** for the first source pass: every table reference, every status page, the MITRE
