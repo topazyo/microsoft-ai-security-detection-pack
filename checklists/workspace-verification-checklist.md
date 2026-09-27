@@ -468,6 +468,12 @@ amount of further page reading settles any of this; only the test does.
       with the Microsoft Copilot Agent Builder send observability data to Microsoft 365 by
       default", and how the two statements interact was not
       established for this pack. MSD-003 states the prerequisite in the same terms.
+- [ ] `AgentsInfo | getschema | where ColumnName in ("AgentName", "Name", "EntraAgentId",
+      "EntraAgentID") | project ColumnName` - record which names come back. MSD-003 marks
+      `AgentName` and `EntraAgentId` Requires further validation, and MSD-004 marks `AgentName`,
+      because Microsoft's pages name those columns differently; their queries fail with a syntax
+      error if a name they use is absent. The case-sensitive `in` is deliberate: two of the four
+      names differ only by case.
 - [ ] `AgentsInfo | extend R = tostring(McpServers) | where R !in~ ("", "[]", "{}", "null") | take 5
       | project AgentId, McpServers` - **read the JSON.** Record the field names. They are not
       documented, and no query should index into this column before you have. This is MSD-003
@@ -1032,10 +1038,11 @@ estate data and the default does not reach it**, because there is no value name 
 also the content. The free-text columns this pack touches include `BehaviorInfo.Description`,
 `BehaviorInfo.Title` where a tenant carries it, the `SampleLabels` rollup built from whichever of
 those two that tenant has, `CopilotActivity.LLMEventData`, `AgentsInfo.McpServers`,
-`EmailEvents.Subject`, `AADServicePrincipalSignInLogs.Agent`, `AgentsInfo.AgentName` and
-`CopilotActivity.AgentName`. **The two agent-name columns are listed separately because they are
-different columns that share a name**: MSD-003 and MSD-004 return the one in `AgentsInfo`, MSD-007
-returns the one in `CopilotActivity`, and all three reach the same classification by the test above,
+`EmailEvents.Subject`, `AADServicePrincipalSignInLogs.Agent`, `AgentsInfo.AgentName` (`Name` on
+two Microsoft pages) and `CopilotActivity.AgentName`. **The two agent-name columns are listed
+separately because they are different columns that share a name in this pack's queries**: MSD-003
+and MSD-004 return the one in `AgentsInfo`, MSD-007 returns the one in `CopilotActivity`, and all
+three reach the same classification by the test above,
 Microsoft publishing no value set for either. **`Title` is on this list because
 MSD-008's step 1 names it behind `column_ifexists()`**, so an operator whose tenant carries the
 column gets that free text in `SampleLabels` rather than nothing. **For those, what travels is the column name and the shape you

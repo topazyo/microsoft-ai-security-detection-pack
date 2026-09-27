@@ -48,8 +48,9 @@ stamp 2026-01-12). Page title: **`BehaviorInfo (Preview)`**.
 > from a different page, quoted below - not from any value the schema reference names. The label is
 > **Provisional** rather than Requires further validation because no Microsoft source contradicts
 > another here; the value set is simply undocumented, which is what Provisional means in the
-> canonical legend. MSD-007 is the pack's one Requires-further-validation row, and keeping that label
-> for the conflicting-sources case is what makes it worth anything.
+> canonical legend. MSD-007 is the pack's one detection whose status is Requires further
+> validation, and keeping that label for the conflicting-sources case is what makes it worth
+> anything.
 
 > **Provisional: `Categories` has no published value format, and one environment returned a
 > serialised array string rather than a bare name.** Microsoft types the column and publishes no

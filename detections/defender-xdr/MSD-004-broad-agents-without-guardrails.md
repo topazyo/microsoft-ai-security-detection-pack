@@ -5,7 +5,7 @@
 | **ID** | MSD-004 |
 | **Deployment target** | Microsoft Defender XDR advanced hunting |
 | **Primary table** | `AgentsInfo` |
-| **Status** | **Public Preview**. Five Provisional elements below: the internal shapes of `Guardrails`, `DeclaredTools`, `McpServers` and `Endpoints`, and the `Availability` value list. |
+| **Status** | **Public Preview**. Five Provisional elements below: the internal shapes of `Guardrails`, `DeclaredTools`, `McpServers` and `Endpoints`, and the `Availability` value list. The `AgentName` column name is Requires further validation. |
 | **Last verified** | 2026-08-15 |
 | **MITRE ATLAS** | *Not mapped to a technique.* This detection reads configuration and observes no adversary behaviour - see the note below. |
 | **OWASP LLM 2026** | LLM03:2026 Excessive Agency |
@@ -64,6 +64,15 @@ stamp 2026-06-03). Page title: **`AgentsInfo (Preview)`**.
 > **Provisional: `Availability` has no documented value list.** Learn describes what the column
 > means but does not enumerate its values. This query therefore projects it rather than filtering on
 > it. Add a filter only after reading the values your own workspace emits.
+
+> Requires further validation: the name `AgentName`. The table reference quoted above lists it,
+> re-read 2026-09-27. The Azure Monitor Logs reference for `AgentsInfo` lists `Name` with the same
+> description (`ms.date` 2026-07-31), and the Defender for Endpoint page on discovering local AI
+> agents uses `Name` in its advanced-hunting queries against this table (`ms.date` 2026-09-16), both
+> read 2026-09-27. Microsoft's own sources conflict on this file's deployment target, which is what
+> that label means in the canonical legend. The queries keep `AgentName`, so a wrong name fails
+> loudly as a syntax error rather than returning an empty column, and `column_ifexists()` is
+> deliberately not used for that reason. Verification step 1 settles it.
 
 > **`isempty()` alone would have made this detection fail silently, in the direction that matters.**
 > **The `isempty()` reference settles this outright, in its own example table on the page this file
@@ -436,7 +445,10 @@ not a more accurate one.
 
 ## Sources
 
-- [AgentsInfo table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-agentsinfo-table) - last verified 2026-08-15
+- [AgentsInfo table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-agentsinfo-table) - last verified 2026-08-15, re-read 2026-09-27 for the `AgentName` row, which is unchanged, at an unchanged rendered date of 2026-06-03
+- [Azure Monitor Logs reference - AgentsInfo (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/agentsinfo) - read 2026-09-27, `ms.date` 2026-07-31, for the `Name` row the Requires further validation note sets against this file's schema table
+- [Discover local AI agents with Microsoft Defender for Endpoint (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-endpoint/discover-local-ai-agents) - read 2026-09-27, `ms.date` 2026-09-16, for its advanced-hunting queries on `AgentsInfo`, which use `Name` and read `name`, `type` and `endpoint` from `DeclaredTools` and `McpServers`, for the sentences on which columns carry local AI agent data, and for its sentence on when the table adds a record
+- [Handle advanced hunting errors (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors) - read 2026-09-27, `ms.date` 2026-05-18, for the syntax-error row, whose cause includes "references to nonexistent operators, columns, functions, or tables"
 - [Detect and investigate threats to AI agents using Microsoft Defender (Preview) (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/security-for-ai/ai-agent-detection-protection) - last verified 2026-08-15
 - [`isempty()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/isempty-function) - last verified 2026-08-15, for the empty-`dynamic` behaviour the predicates work around, and re-read 2026-08-19 for the published example table quoted above. **Each date is kept rather than collapsed**, because each later read is what added the material recorded against it
 - [`tostring()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/tostring-function) - last verified 2026-08-16, for the coercion step and for the null case the `""` entry covers

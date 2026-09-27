@@ -126,6 +126,21 @@ The date on this entry moves when the release gate is met, and no run has met it
   different field. MSD-007's opening warning now calls its table not a native Defender XDR
   advanced-hunting table. The headline claim about chat prompts is unchanged, and its two
   load-bearing figures were re-derived on 2026-09-27 and still reproduce.
+- **2026-09-27 - Two `AgentsInfo` column names are Requires further validation in MSD-003 and
+  MSD-004.** The Defender XDR `AgentsInfo` reference both files quote lists `AgentName` and
+  `EntraAgentId`, re-read 2026-09-27 at its unchanged 2026-06-03 stamp. The Azure Monitor Logs
+  reference for the same table lists `Name` and `EntraAgentID` (`ms.date` 2026-07-31), and the
+  Defender for Endpoint page on discovering local AI agents queries the table in advanced hunting
+  with `Name` (`ms.date` 2026-09-16). Microsoft's own sources conflict, which is that label's
+  definition in the canonical legend. The label is scoped to the column names: MSD-003 carries it
+  for both and MSD-004 for `AgentName`, the only one of the two it uses, and neither detection's
+  status moves. The queries keep the names the Defender XDR reference publishes, so a wrong name
+  fails loudly as a syntax error; `column_ifexists()` was not used because it would make that
+  failure silent. MSD-003's verification step 1 and checklist Group 3 now carry a `getschema` check
+  that settles which names a workspace carries. The free-text column lists in the scope document
+  and the checklist note the contested name, and MSD-008 now calls MSD-007 the one detection whose
+  status is Requires further validation rather than the one row carrying that label, since the
+  label now also appears scoped to columns. No query changed.
 ### Verification dates in this version
 
 - **2026-08-15** for the first source pass: every table reference, every status page, the MITRE

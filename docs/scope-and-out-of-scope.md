@@ -258,10 +258,11 @@ content.
   list and this one name the same columns**, which they have to: `EmailEvents.Subject`,
   `BehaviorInfo.Title`, `BehaviorInfo.Description`, the `SampleLabels` rollup built from whichever
   of those two a tenant carries, `CopilotActivity.LLMEventData`,
-  `AADServicePrincipalSignInLogs.Agent`, `AgentsInfo.McpServers`, `AgentsInfo.AgentName` and
-  `CopilotActivity.AgentName`. **The two agent-name columns are different columns that share a
-  name**, returned by MSD-003 and MSD-004 on the one hand and by MSD-007 on the other, and the test
-  above reaches the same answer for both because Microsoft publishes no value set for either.
+  `AADServicePrincipalSignInLogs.Agent`, `AgentsInfo.McpServers`, `AgentsInfo.AgentName` (`Name` on
+  two Microsoft pages) and `CopilotActivity.AgentName`. **The two agent-name columns are different
+  columns that share a name in this pack's queries**, returned by MSD-003 and MSD-004 on the one
+  hand and by MSD-007 on the other, and the test above reaches the same answer for both because
+  Microsoft publishes no value set for either.
   **`AgentsInfo.McpServers` is barred outright rather than routed**: Microsoft describes it as
   holding "server URLs and credential configuration", and MSD-003 says never to paste its contents
   anywhere. **A custom analytics-rule name your own workspace emits is your estate's naming**, so
