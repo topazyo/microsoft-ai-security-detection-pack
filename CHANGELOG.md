@@ -516,6 +516,35 @@ The date on this entry moves when the release gate is met, and no run has met it
     corrected site carries a dated marker.** **No query changed**, and the `distinct` in each
     baseline leg is kept with a comment recording that it is a no-op as the leg stands and becomes
     load-bearing the moment the collapse above it is removed.
+- **2026-09-27 for the reads the twelve corrections dated 2026-09-27 under Fixed rest on**, in the
+  senses the sub-entries below name. Dates given as `ms.date` name that field.
+  - **Pages new to the pack:** the Purview page on Copilot audit logs; the Azure Monitor
+    example-queries page for `CopilotActivity`; the page on advanced hunting with Microsoft Sentinel
+    data; the Azure Monitor Logs reference for `AgentsInfo`; the Defender for Endpoint page on
+    discovering local AI agents; the Agent 365 observability concepts page; the `SigninLogs` table
+    reference; the page on protecting AI agents in real time; and two Kusto references, the
+    `dynamic` data type page and `bag_has_key()`.
+  - **Not Microsoft Learn, and cited as corroboration only:** four files in Microsoft's
+    Azure-Sentinel repository, each pinned to a commit - the Copilot sample row and the Copilot
+    jailbreak analytic rule cited by MSD-007, and two Microsoft Defender XDR solution hunting
+    queries cited by MSD-002. None of them sets a status or moves a value's class.
+  - **A new reason on a page already cited:** the advanced hunting errors page, now in MSD-003's
+    and MSD-004's Sources for why a wrong column name fails loudly, and re-read for the example
+    message corrected above; the AI agent detection and protection page, for the published-agents
+    sentence MSD-008 now quotes; and the advanced-hunting schema tables page, for the sentence
+    section 3.1 of the methodology now quotes about where `ActionType` values are listed.
+  - **Pages re-read to settle a question rather than to add a citation:** the Defender XDR
+    `AgentsInfo` reference, whose rendered date is unchanged at 2026-06-03; the `CopilotActivity`
+    reference, whose `LLMEventData` row is unchanged; the `CloudAppEvents`
+    reference, which lists no `ActionType` values and none of the three names section 1 of the
+    methodology discusses; the `AADServicePrincipalSignInLogs` reference, which still publishes no
+    `ConditionalAccessStatus` values; and the advanced hunting overview and the schema tables list,
+    whose section 3.1 figures reproduce at unchanged rendered dates. None of these moves a
+    citation date, per the rule stated under 2026-08-18.
+  - **A Microsoft Learn site search, recorded because two absence claims rest on it.** It returned
+    no page for `DataExfiltrationDetected` or `AbnormalCopilotBehavior` and one, the Purview page,
+    for `XPIADetected`, which is the control. And no page it returned for `CopilotInteraction` and
+    `CloudAppEvents` carries both terms.
 
 ### Workspace verification
 
