@@ -28,7 +28,7 @@ Each of these was considered and excluded on purpose. None is an oversight.
 
 **No detection here assumes such a surface exists.** Across the pages listed in
 [`verification-methodology.md`](verification-methodology.md), no table or column documents Microsoft
-365 Copilot user prompts or chat interactions. Two adjacent surfaces do exist - email-borne prompt
+365 Copilot user prompts. Two adjacent surfaces do exist - email-borne prompt
 injection through Defender for Office 365, and AI-agent telemetry - and the pack builds on both.
 It does not extrapolate from either to a chat-prompt surface.
 

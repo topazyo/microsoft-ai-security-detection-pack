@@ -138,10 +138,24 @@ detections" implies on its own.
 This is an assumption a coverage map can easily get wrong, so it is stated first. Across the seven
 Microsoft Learn pages listed in
 [`docs/verification-methodology.md`](docs/verification-methodology.md) section 3.1, **no table or
-column documents Microsoft 365 Copilot user prompts or chat interactions.** Two of those seven carry
+column documents Microsoft 365 Copilot user prompts.** Two of those seven carry
 the weight: the advanced hunting overview contains zero occurrences of "Copilot" and zero of
-"prompt", and the schema table list - which enumerates every advanced hunting table - contains one
-occurrence of "Copilot", referring to Copilot **Studio** agents.
+"prompt", and the schema table list - which enumerates every native Defender XDR advanced hunting
+table - contains one occurrence of "Copilot", referring to Copilot **Studio** agents.
+
+Three things bound that claim. It is about the native Defender XDR schema. Advanced hunting in the
+Defender portal can also query a connected Microsoft Sentinel workspace, where Microsoft says "you
+can find many of that workspace's tables"
+([advanced hunting with Microsoft Sentinel data](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-microsoft-defender),
+read 2026-09-27) without naming `CopilotActivity`; that Sentinel table carries Copilot interaction
+audit records, though not documented prompt text
+([`CopilotActivity` table reference](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/copilotactivity),
+re-read 2026-09-27). And queries published outside Microsoft filter `CloudAppEvents` on
+`ActionType == "CopilotInteraction"`, a value no Microsoft Learn page read for this pack documents
+for that column: the
+[`CloudAppEvents` reference](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudappevents-table),
+re-read 2026-09-27, lists no `ActionType` values, and no page the Microsoft Learn site search
+returned for the two terms on that date carries both.
 
 What exists is **two adjacent surfaces on different release states**, and this pack builds on both:
 prompt injection carried in *email* through Defender for Office 365 (which does reach advanced

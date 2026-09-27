@@ -161,14 +161,15 @@ reference, the `AgentsInfo` table reference, the `BehaviorInfo` table reference,
 detection and protection page.
 
 **What was found:** no table, column, or page in that set documents Microsoft 365 Copilot user
-prompts or Copilot chat interactions. Two of the seven carry the weight, and both were checked by
+prompts. Two of the seven carry the weight, and both were checked by
 full-text search rather than by reading:
 
 - The **advanced hunting overview** contains **zero occurrences of "Copilot"** and **zero of
   "prompt"**.
-- The **advanced-hunting schema table list** - the page that enumerates every advanced hunting
-  table - contains exactly **one** occurrence of "Copilot", and it refers to Copilot **Studio**
-  agents: the `AIAgentsInfo` entry, described there as "Information about AI agents created with
+- The **advanced-hunting schema table list** - the page that enumerates every native Defender XDR
+  advanced hunting table - contains exactly **one** occurrence of "Copilot", and it refers to
+  Copilot **Studio** agents: the `AIAgentsInfo` entry, described there as "Information about AI
+  agents created with
   Microsoft Copilot Studio, including agent configuration and ownership details". **No entry in
   that enumeration is a Copilot chat-prompt table.**
 
@@ -177,7 +178,8 @@ overview still contains zero occurrences of "Copilot" and zero of "prompt", at a
 updated on" date of 2026-08-07. The schema table list still contains exactly one occurrence of
 "Copilot", still the `AIAgentsInfo` entry and still describing Copilot **Studio** agents in the
 words quoted above, at a rendered "Last updated on" date of 2026-07-27. **Both figures were
-re-derived against the live pages on 2026-09-20 and both still reproduce**, and on each of these
+re-derived against the live pages on 2026-09-20 and both still reproduce**, as they did again on
+2026-09-27 at the same two rendered dates, and on each of these
 two pages the rendered date and the `ms.date` field agree, so neither figure distinguishes them.
 No entry in that enumeration is described as carrying Microsoft 365 Copilot user prompts or chat
 interactions. The re-read is recorded because this is the claim the most rests
@@ -186,9 +188,9 @@ are searches of the page **text**, which is the same instrument as the 2026-08-1
 absence claim of this kind can rest on.
 
 That is a stronger form of the evidence than "we looked and did not see it": the schema list is an
-enumeration of the full table set, so an absence from it carries the same weight as the positive
-enumeration argued for in 3.2 below. What exists is two adjacent surfaces on different release
-states, and this pack builds on both:
+enumeration of the full native table set, so an absence from it carries the same weight as the
+positive enumeration argued for in 3.2 below. What exists is two adjacent surfaces on different
+release states, and this pack builds on both:
 
 - **Prompt injection carried in email**, through Microsoft Defender for Office 365. It reaches
   advanced hunting as a detection-technology value, and its page carries no preview qualifier -
@@ -206,10 +208,28 @@ that is a correction to file, not an argument.
 
 **One adjacent surface that is easy to mistake for a refutation.** The Sentinel `CopilotActivity`
 table does carry Copilot audit activity, including a `CopilotInteraction` record type. It is a
-Log Analytics audit table populated through the Office Management API - not a Defender advanced
-hunting table - and Microsoft does not document that its `LLMEventData` column carries prompt text.
-[MSD-007](../detections/sentinel/MSD-007-copilot-settings-change.md) states this in its opening
-lines for that reason.
+Log Analytics audit table populated through the Office Management API - not a native Defender XDR
+advanced hunting table - and Microsoft does not document that its `LLMEventData` column carries
+prompt text. [MSD-007](../detections/sentinel/MSD-007-copilot-settings-change.md) states this in its
+opening lines for that reason. Advanced hunting in the Defender portal can query a connected
+Microsoft Sentinel workspace: once one is connected, "you can find many of that workspace's tables
+organized by solution after the Microsoft Defender tables under the Schema tab", on the page for
+[advanced hunting with Microsoft Sentinel data](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-microsoft-defender),
+read 2026-09-27, which does not name `CopilotActivity`. So the claim above is about the native
+Defender XDR schema, and reaching this table from advanced hunting would not change what the table
+documents.
+
+A second thing that is easy to mistake for a refutation is a filter used in queries published
+outside Microsoft: `CloudAppEvents | where ActionType == "CopilotInteraction"`. No Microsoft Learn
+page read for this pack documents that value for `CloudAppEvents.ActionType`; the Purview page on
+Copilot audit logs documents `CopilotInteraction` as the `Operation` of a Copilot audit record,
+which is a different field. The
+[`CloudAppEvents` reference](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-cloudappevents-table),
+re-read 2026-09-27, lists no `ActionType` values, and no page the Microsoft Learn site search
+returned for the two terms on that date carries both. The
+[advanced hunting schema-tables page](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-schema-tables)
+says the in-portal schema reference lists "possible values in the `ActionType` column", read the
+same day, so a tenant is where that value can be checked.
 
 ### 3.2 "Defender for Cloud AI threat protection does not cover Microsoft 365 Copilot or GitHub Copilot"
 
@@ -251,7 +271,7 @@ predicate, or a projected-but-never-filtered column - never by a guess.
 | `Agent` column shape | MSD-006 | One sentence: "Details of agentic sign-in." | Projected, never filtered on. A tenant returned a JSON object on 2026-08-24; the page still publishes no shape |
 | `ConditionalAccessPolicies` / `LocationDetails` serialisation | MSD-006 | Typed `string`, with composite descriptions and no published value format | Flagged Provisional; inspect before filtering. A tenant returned a JSON array and a JSON object respectively on 2026-08-24; the page still publishes no format, so the label stands |
 | `CopilotActivity.RecordType` full value set | MSD-007 | Two examples behind an "e.g." | Step 2 is an **exclusion**, so a new record type appears without a rule change |
-| `LLMEventData` contents | MSD-007 | "Parsed LLM event data" - no schema | Not read; the file forbids building prompt detection on it |
+| `LLMEventData` contents | MSD-007 | "Parsed LLM event data" - no schema | Not read; the file forbids building prompt-text detection on it |
 | `BehaviorInfo.ActionType` values for AI-agent protection | MSD-008 | "Type of behavior" - no value list | Discovery query first; operator completes the filter |
 | `ServiceSource` / `DetectionSource` values | MSD-008 | Described, not enumerated | Grouped by in discovery, never filtered on |
 | `BehaviorInfo.Categories` serialisation | MSD-008 | Types the column, publishes no value format | Grouped by in discovery, never filtered on; one environment returned a serialised array string, so the rollup keys on combinations |

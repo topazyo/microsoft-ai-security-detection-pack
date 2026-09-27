@@ -94,6 +94,38 @@ The date on this entry moves when the release gate is met, and no run has met it
   marker. On this pack's reading, which no page read states and no run has tested, a property
   nested in a `dynamic` payload is also the silent case rather than the loud one the README paired
   it with. No status label, no schema element and no query changed.
+- **2026-09-27 - MSD-007 overstated what Learn leaves undocumented about Copilot interaction
+  records.** Its "cannot see" bullet said Learn documents neither the `CopilotInteraction` record's
+  contents nor the shape of `LLMEventData`. The Purview page cited above documents what the records
+  hold, and its table of "some of the common properties" includes a per-message `JailbreakDetected`
+  flag and no property holding prompt or response text; the `CopilotActivity` table reference,
+  re-read 2026-09-27, still publishes no schema for `LLMEventData`. The bullet now says so, names
+  Microsoft's Azure-Sentinel sample row and the Azure Monitor example-queries page as where the
+  shape shows, and carries a dated marker. The sample row carries `Messages[].JailbreakDetected` and
+  an empty `AccessedResources` array, so it is cited for the first path only. The opening warning
+  is narrowed from prompt-injection detection to prompt-text detection, because Microsoft's own
+  Sentinel analytic rule reads `JailbreakDetected` from `LLMEventData`, and the bullet on prompt
+  content and the matching row of the methodology's section 3.3 table are narrowed the same way.
+  The sentence after the warning now describes what this file uses the table for rather than what
+  the table supports. Verification step 3 said nothing tells a reader in advance what the column
+  carries; it now scopes that to the table reference and carries a dated marker. No status label
+  and no query changed.
+- **2026-09-27 - The headline negative claim was broader than its evidence on chat interactions.**
+  `README.md`, section 3.1 of the methodology and the scope document said no table or column in the
+  pages read documents Microsoft 365 Copilot user prompts or chat interactions. The `CopilotActivity`
+  table carries `CopilotInteraction` audit records, and advanced hunting in the Defender portal can
+  query a connected Microsoft Sentinel workspace's tables, per
+  [advanced hunting with Microsoft Sentinel data](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-microsoft-defender)
+  (`ms.date` 2026-06-09, read 2026-09-27), which says "many of that workspace's tables" and does not
+  name `CopilotActivity`. The claim now covers user prompts at all three sites. The README and the
+  methodology also state it as one about the native Defender XDR schema, call the schema table list
+  an enumeration of every native table, and record a further bound: a `CloudAppEvents` filter on
+  `ActionType == "CopilotInteraction"`, used in queries published outside Microsoft, uses a value no
+  Microsoft Learn page read for this pack documents for that column. The methodology adds that the
+  Purview page documents `CopilotInteraction` as the `Operation` of an audit record, which is a
+  different field. MSD-007's opening warning now calls its table not a native Defender XDR
+  advanced-hunting table. The headline claim about chat prompts is unchanged, and its two
+  load-bearing figures were re-derived on 2026-09-27 and still reproduce.
 ### Verification dates in this version
 
 - **2026-08-15** for the first source pass: every table reference, every status page, the MITRE
