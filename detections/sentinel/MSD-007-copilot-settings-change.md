@@ -273,8 +273,9 @@ CopilotActivity
   elsewhere and fail the same way for different reasons: MSD-005 needs Defender for Cloud alerts to
   be streaming, MSD-006 needs the service-principal sign-in diagnostic category to be exported, and
   MSD-003 and MSD-004 need the Microsoft 365 app connector to be collecting Agent 365 observability
-  data, which MSD-003 quotes from Learn. **Confirm the source in each case before reading an empty
-  result as a clean one**, rather than counting how many detections that applies to. Verification
+  data for their Agent 365 agents, which MSD-003 quotes from Learn. **Confirm the source in each
+  case before reading an empty result as a clean one**, rather than counting how many detections
+  that applies to. Verification
   step 1.
 - **Connector state itself.** No query in this pack reads whether the connector is configured; the
   table is the only thing these queries see. An empty result therefore does not discriminate a

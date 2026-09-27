@@ -461,13 +461,23 @@ amount of further page reading settles any of this; only the test does.
 ## Group 3 - The AI agent inventory surface *(MSD-003, MSD-004)*
 
 - [ ] Confirm the **Microsoft 365 app connector** is configured to collect Agent 365 observability
-      data. **Without it, expect `AgentsInfo` to be empty however many agents exist**, and check this
-      prerequisite before concluding from an empty result that you have no agents. **What the
+      data. **Without it, expect no Agent 365 agents in `AgentsInfo` however many exist**, and check
+      this prerequisite before concluding from an empty result that you have no agents. Local AI
+      agents that Defender for Endpoint discovers on onboarded devices are reported there without
+      it, under `Platform == "LocalAgents"`, so leave them out before reading a result as evidence
+      about the connector. **What the
       connector gates is not settled here**: the same feature page also states, verbatim, that
       "Agents built with Microsoft Copilot Studio, Microsoft Foundry, and declarative agents built
       with the Microsoft Copilot Agent Builder send observability data to Microsoft 365 by
       default", and how the two statements interact was not
       established for this pack. MSD-003 states the prerequisite in the same terms.
+
+    > **Correction, 2026-09-27.** An earlier version of this step said `AgentsInfo` is empty without
+    > the connector however many agents exist. The Defender for Endpoint page on discovering local
+    > AI agents reports local agents in the table and says "You don't need additional deployment,
+    > configuration, or scripts beyond the device onboarding requirements"
+    > ([source](https://learn.microsoft.com/en-us/defender-endpoint/discover-local-ai-agents),
+    > `ms.date` 2026-09-16, read 2026-09-27). `CHANGELOG.md` is the record.
 - [ ] `AgentsInfo | getschema | where ColumnName in ("AgentName", "Name", "EntraAgentId",
       "EntraAgentID") | project ColumnName` - record which names come back. MSD-003 marks
       `AgentName` and `EntraAgentId` Requires further validation, and MSD-004 marks `AgentName`,
@@ -475,8 +485,9 @@ amount of further page reading settles any of this; only the test does.
       error if a name they use is absent. The case-sensitive `in` is deliberate: two of the four
       names differ only by case.
 - [ ] `AgentsInfo | extend R = tostring(McpServers) | where R !in~ ("", "[]", "{}", "null") | take 5
-      | project AgentId, McpServers` - **read the JSON.** Record the field names. They are not
-      documented, and no query should index into this column before you have. This is MSD-003
+      | project AgentId, McpServers` - **read the JSON.** Record the field names. The table
+      reference does not document them, Microsoft's local-agent queries cover only that platform,
+      and no query should index into this column before you have. This is MSD-003
       verification step 2; a bare `isnotempty(McpServers)` returns every agent whose platform emits
       an empty array, so a `take 5` after it hands you five arbitrary agents rather than five with a
       server attached, and the step teaches you nothing.

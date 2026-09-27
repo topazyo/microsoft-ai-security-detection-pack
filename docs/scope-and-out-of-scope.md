@@ -22,7 +22,8 @@ schema for the audience this pack is for.
 
 ## Out of scope for v0.1
 
-Each of these was considered and excluded on purpose. None is an oversight.
+Each of these was considered and excluded on purpose, except the last, which records a gap found
+after this scope was set. None is an oversight.
 
 ### Microsoft 365 Copilot chat-prompt hunting
 
@@ -63,8 +64,17 @@ Two surfaces were read during this pass and deliberately not built on:
   which is this section's source for the six identifiers and not for this description. That makes it **the
   only documented surface in this pack's evidence set that records what an agent did.** `BehaviorInfo`,
   which MSD-008 reads, carries runtime records too, but they are protection audit and block events -
-  what a control did about an agent, not what the agent did. `CloudAppEvents` `ActionType` values for
-  agent activity are not documented, so a narrowing filter would be a guess.
+  what a control did about an agent, not what the agent did. Microsoft documents five `ActionType`
+  values for agent activity in that table: "`ActionType` reflects the operation (`InvokeAgent`,
+  `InferenceCall`, `ExecuteToolBySDK`, `ExecuteToolByGateway`, `ExecuteToolByMCPServer`) and the
+  per-span fields are inside `RawEventData`", on the
+  [Agent 365 observability concepts page](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/observability-concepts),
+  `ms.date` 2026-09-02, read 2026-09-27. That page does not say which span type produces which
+  value, for example which of the three `ExecuteTool*` values an `execute_tool` span yields.
+
+  > **Correction, 2026-09-27.** An earlier version of this passage said `CloudAppEvents`
+  > `ActionType` values for agent activity are not documented, so a narrowing filter would be a
+  > guess. The page above documents five. `CHANGELOG.md` is the record.
 
   **The argument against the deferral is accepted, and it is recorded here rather than answered.**
   MSD-008 presents the same problem, and this pack solves it there by shipping a discovery query with
@@ -113,7 +123,8 @@ Two surfaces were read during this pass and deliberately not built on:
   for Cloud Apps access control, Defender for Cloud Apps session control, and Defender for Cloud Apps
   app connector. The other five descriptions are as published. **`ActionType` and `ActivityType`
   carry the identical published description**, so which of the two a narrowing filter should key on
-  is not settled by the reference, which is one more reason the query above ships as discovery.
+  is not settled by the reference, which is one more reason the query above ships as discovery. For
+  agent activity, the Agent 365 observability concepts page places the operation in `ActionType`.
 
 - **`BehaviorEntities`.** Named by Microsoft as a companion to `BehaviorInfo`, and named in MSD-008
   for that reason. Its reference page was read for the table's description and status, which MSD-008
@@ -174,6 +185,20 @@ matrix carries it as a GA row - and it is the second thing a reader of a Microso
 detection pack is likely to look for. **No detection here covers it.** Its discovery data does not
 land in the advanced hunting tables this pack verified, and the Sentinel-side surface was not
 verified in this pass. A v0.2 candidate, recorded rather than left implicit.
+
+### Local AI agent posture
+
+Recorded on 2026-09-27, when this pack first read the page cited here, so it is a coverage gap in
+MSD-003 and MSD-004 rather than one of the exclusions above that were weighed when this scope was
+set.
+Defender for Endpoint discovers local AI agents on onboarded devices and reports them in
+`AgentsInfo`, where Microsoft's own queries select them with `Platform == "LocalAgents"`. It states
+that "Local AI agent posture is nested in the `RawAgentInfo` column, under `localAgentMetadata`",
+including whether an agent acts without prompting the user for approval and the local MCP servers it
+uses, and that "Local MCP servers are reported only in `AgentsInfo`"
+([Discover local AI agents with Microsoft Defender for Endpoint](https://learn.microsoft.com/en-us/defender-endpoint/discover-local-ai-agents),
+`ms.date` 2026-09-16, read 2026-09-27). MSD-003 and MSD-004 do not read `RawAgentInfo`, so no
+detection here covers that posture.
 
 ---
 
@@ -287,7 +312,7 @@ the test, which is the canonical copy**, and if the two ever differ the checklis
 
 | Trigger | Likely v0.2 change |
 |---|---|
-| `CloudAppEvents` agent `ActionType` values become documented, or a workspace pass enumerates them | An agent tool-invocation detection |
+| `CloudAppEvents` agent `ActionType` values become documented, or a workspace pass enumerates them | An agent tool-invocation detection. The first half of this trigger was met by the [Agent 365 observability concepts page](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/observability-concepts), read 2026-09-27; the deferral stands on the cost of the change, which is its stated reason |
 | Microsoft resolves the Sentinel connector labelling conflict | MSD-007's status label moves off Requires further validation, and its existing access-anomaly query becomes defensible to *schedule* rather than to run once |
 | A documented hunting surface for Copilot chat prompts appears | A new detection lane, and a correction to the README's opening claim |
 | The `BehaviorEntities` schema is verified **against a workspace** beyond the single column-set reading one run recorded, and a join is exercised against a generated behaviour | An entity join in MSD-008 |

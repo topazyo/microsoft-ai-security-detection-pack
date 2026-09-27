@@ -63,9 +63,10 @@ unchanged. **One of the classes
 that sits outside the rule is named here rather than left to be discovered**, because a reader of
 this section meets it first. The
 workspace verification report template and [`SECURITY.md`](../SECURITY.md) carry an invented
-`ActionType` illustration, because no documented value exists for that column in this scope and a
-template has to show a contributor the shape to send. **Those two files and no others**: the other
-three contribution templates point at the illustration to tell a contributor not to send it back,
+`ActionType` illustration, because no documented value exists for `BehaviorInfo.ActionType` in this
+scope and a template has to show a contributor the shape to send. **Those two files and no
+others**: the other three contribution templates point at the illustration to tell a contributor not
+to send it back,
 and do not carry it. **It is marked as invented at every point of use.** That is the
 rule above applied to a different problem rather than an exception to it: what the rule protects is
 that nothing unsourced ships unmarked, and an illustration that says it is one does not breach it.
@@ -259,12 +260,12 @@ predicate, or a projected-but-never-filtered column - never by a guess.
 |---|---|---|---|
 | `DetectionMethods` serialisation | MSD-001, MSD-002 | Types the column `string`; publishes no value format | `has`, with a documented operator-selection step |
 | `LatestDeliveryAction` / `LatestDeliveryLocation` value lists | MSD-002 | Columns and descriptions published; no value lists | Projected, never filtered on |
-| `McpServers` internal shape | MSD-003, MSD-004 | `dynamic`; no field names published | String-form test, never indexed into |
+| `McpServers` internal shape | MSD-003, MSD-004 | `dynamic`; no field names on the table reference (local-agent queries on another page read `name`, `type`, `endpoint`) | String-form test, never indexed into |
 | `Guardrails` internal shape | MSD-004 | `dynamic`; no field names published | String-form test against explicit empty forms |
-| `DeclaredTools` internal shape | MSD-004 | `dynamic`; no field names published | String-form test |
+| `DeclaredTools` internal shape | MSD-004 | `dynamic`; no field names on the table reference (local-agent queries on another page read `name`, `type`, `endpoint`) | String-form test |
 | `Endpoints` internal shape | MSD-004 | `dynamic`; describes what it holds, publishes no field names | String-form test in the posture rollup, never indexed into |
 | `Availability` value list | MSD-003, MSD-004 | Describes the column; enumerates no values | Projected, never filtered on |
-| `AgentsInfo` emission cadence | MSD-003, MSD-004 | Not documented at all | 30-day window plus a cadence-measuring verification step |
+| `AgentsInfo` emission cadence | MSD-003, MSD-004 | Not on the table reference; the Defender for Endpoint local-agents page says it "adds a record each time an agent profile is updated", with no schedule stated | 30-day window plus a cadence-measuring verification step |
 | Which `SecurityAlert` column carries the alert identifier | MSD-005 | Column names published with **empty description cells** | Matches on both `AlertName` and `AlertType` |
 | `ConditionalAccessStatus` values | MSD-006 | "Status of all the conditionalAccess policies related to the sign-in" - no value list | Grouped by, never filtered on; operator completes the filter. The page still publishes no value list, so the handling stands |
 | `ResultType` stored values | MSD-006 | Describes semantics ("Success or Failure"), not stored strings | Not filtered on. A tenant stored numeric codes rather than the described words on 2026-08-24, which is the one of these three worth reading before you write an equality filter on the column |
@@ -532,8 +533,14 @@ Stated plainly, because the gap is the reason the release gate exists.
   for AI agent activity - **the only documented surface in this evidence set that records what an
   agent did.** `BehaviorInfo`, which MSD-008 reads, also carries runtime records, but they are
   protection audit and block events rather than the agent's own actions, so it answers "what did a
-  control do" and not "what did the agent do". `CloudAppEvents` `ActionType` values for agent
-  activity are not documented, so a narrowing filter would be a guess.
+  control do" and not "what did the agent do". Microsoft documents five `CloudAppEvents`
+  `ActionType` values for agent activity on the
+  [Agent 365 observability concepts page](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/observability-concepts),
+  `ms.date` 2026-09-02, read 2026-09-27, without saying which span type produces which.
+
+  > **Correction, 2026-09-27.** An earlier version of this paragraph said `CloudAppEvents`
+  > `ActionType` values for agent activity are not documented, so a narrowing filter would be a
+  > guess. The page above documents five. `CHANGELOG.md` is the record.
 
   Two detections here tell you what agents are **configured** to do - MSD-003 and MSD-004, both on
   `AgentsInfo` - and none tells you what any agent **did**. That is a gap in coverage rather than

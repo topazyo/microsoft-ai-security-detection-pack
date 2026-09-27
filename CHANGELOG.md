@@ -141,6 +141,55 @@ The date on this entry moves when the release gate is met, and no run has met it
   and the checklist note the contested name, and MSD-008 now calls MSD-007 the one detection whose
   status is Requires further validation rather than the one row carrying that label, since the
   label now also appears scoped to columns. No query changed.
+- **2026-09-27 - `CloudAppEvents` agent `ActionType` values are documented.** The scope document
+  and section 6 of the methodology said the `ActionType` values for agent activity in
+  `CloudAppEvents` are not documented. The
+  [Agent 365 observability concepts page](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/observability-concepts)
+  (`ms.date` 2026-09-02, read 2026-09-27) documents five, `InvokeAgent`, `InferenceCall`,
+  `ExecuteToolBySDK`, `ExecuteToolByGateway` and `ExecuteToolByMCPServer`, without saying which
+  span type produces which. Both sites now say so and carry dated markers, and the scope document's
+  trigger table records that the first half of its `CloudAppEvents` trigger was met. The v0.2
+  deferral stands on its stated reason, the cost of moving every inline count. The scope
+  document's note that the table reference does not settle `ActionType` against `ActivityType` now
+  adds that this page places the operation in `ActionType`, and section 1 of the methodology names
+  `BehaviorInfo.ActionType` as the column its invented illustration stands in for, where "that
+  column" could now be read as the documented one. No query changed.
+- **2026-09-27 - The Defender for Endpoint page on local AI agents reaches several statements about
+  `AgentsInfo`.** That page reports local AI agents discovered on onboarded devices in `AgentsInfo`
+  ([Discover local AI agents with Microsoft Defender for Endpoint](https://learn.microsoft.com/en-us/defender-endpoint/discover-local-ai-agents),
+  `ms.date` 2026-09-16, read 2026-09-27). The sites it reaches:
+  - MSD-003 said a developer-configured MCP server on a workstation is outside its table. On a
+    device where local agents are discovered, a local MCP server is inside it, in `RawAgentInfo`,
+    and a remote one is in `McpServers`. Corrected, with a dated marker.
+  - MSD-004 said agents outside Microsoft Agent 365 management are outside it. Local agents are
+    reported in the table, and on this pack's reading a published, active one with declared tools
+    reaches the primary query, because the page lists the columns carrying local-agent data without
+    `Guardrails`. Corrected, with a dated marker.
+  - Checklist Group 3 said the table is empty without the Microsoft 365 app connector, and MSD-003's
+    prerequisite heading said what has to be true for the table to hold anything. The page names no
+    connector among its prerequisites and says "You don't need additional deployment, configuration,
+    or scripts beyond the device onboarding requirements". Both now limit that to Agent 365 agents
+    and carry dated markers, and MSD-007's reference to the prerequisite is
+    narrowed the same way.
+  - Section 3.3 of the methodology said the table's emission cadence is not documented at all, and
+    MSD-003 and MSD-004 said Learn does not document it. The page states that "AgentsInfo adds a
+    record each time an agent profile is updated", which names one trigger and no schedule. The
+    methodology's table cell said "Not documented at all", which the page falsifies; a table cell
+    cannot carry a marker, so this entry is the record. MSD-003's and MSD-004's statements are
+    narrowed rather than falsified, because the page does not say whether rows are also written on
+    a schedule: each window paragraph now scopes its statement to the table reference and quotes the
+    page, and each cannot-see bullet names the trigger. The 30-day windows, the cadence step and the
+    query comments are unchanged.
+  - MSD-003, MSD-004, the checklist and section 3.3 said no field names are published inside
+    `McpServers` or `DeclaredTools`. The page's queries read `name`, `type` and `endpoint` from
+    both, scoped to `Platform == "LocalAgents"`. Each site now scopes its statement to the table
+    reference. The Provisional labels stand, because the table reference still publishes nothing and
+    the page speaks for one platform.
+  - A new section of the scope document records local-agent posture, nested in `RawAgentInfo`, as a
+    gap neither detection covers, and the lead of that list now says its last entry is a gap found
+    after the scope was set.
+
+  No query changed.
 ### Verification dates in this version
 
 - **2026-08-15** for the first source pass: every table reference, every status page, the MITRE

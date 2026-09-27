@@ -59,7 +59,10 @@ stamp 2026-06-03). Page title: **`AgentsInfo (Preview)`**.
 > for the same reason as the other three: the posture rollup below counts agents by whether it is
 > empty, and Learn describes what the column holds - "List of agent runtime endpoints, including
 > URL, transport type, and external connectivity flag" - without publishing the field names inside
-> it.
+> it. The four shapes are undocumented on the table reference. The Defender for Endpoint page on
+> discovering local AI agents reads `name`, `type` and `endpoint` from `DeclaredTools` and
+> `McpServers` in queries scoped to `Platform == "LocalAgents"` (read 2026-09-27), which says
+> nothing about other platforms.
 
 > **Provisional: `Availability` has no documented value list.** Learn describes what the column
 > means but does not enumerate its values. This query therefore projects it rather than filtering on
@@ -159,8 +162,10 @@ AgentsInfo
 | order by AgentName asc
 ```
 
-**The window is a load-bearing choice, not a default.** Microsoft Learn does not document whether
-`AgentsInfo` writes rows on a schedule or only on change. If rows are change-driven, an agent whose
+**The window is a load-bearing choice, not a default.** The `AgentsInfo` table reference does not
+document whether the table writes rows on a schedule or only on change. The Defender for Endpoint
+page on discovering local AI agents states that "AgentsInfo adds a record each time an agent profile
+is updated", which names one trigger and no schedule. If rows are change-driven, an agent whose
 configuration has been stable for longer than the window produces no row and **drops out of the
 result** - and a stable, broadly deployed agent with tools and no guardrails is precisely this
 detection's target. Verification step 4 establishes which behaviour your workspace has.
@@ -353,13 +358,25 @@ not a more accurate one.
   between "none attached" and "not reported". This is the single largest limitation of this
   detection.
 - **Agents that have not changed inside the query window, if `AgentsInfo` writes rows only on
-  change.** Learn does not document the emission cadence. This limits the *population* the query
-  sees rather than what it observes about any agent, which is what makes it easy to miss.
+  change.** The table reference does not document the emission cadence, and the Defender for
+  Endpoint page names profile updates as one trigger without a schedule. This limits the
+  *population* the query sees rather than what it observes about any agent, which is what makes it
+  easy to miss.
 - **Whether a declared tool was ever invoked.** `DeclaredTools` is configuration. Runtime tool use
   is a different surface - `CloudAppEvents` per the feature page, and behaviours per MSD-008.
 - **Whether the granted permissions are excessive.** The `Permissions` column is projected for
   review, not evaluated. No query in this pack scores a permission set.
-- **Agents outside Microsoft Agent 365 management.** Same boundary as MSD-003.
+- **Agents the table does not report, and the posture of local AI agents it does.** Same boundary as
+  MSD-003. The Defender for Endpoint page on discovering local AI agents states that "Many
+  AgentsInfo columns describe cloud agents and are empty for local AI agents" and lists the columns
+  that carry local-agent data, and `Guardrails` is not among them, so on this pack's reading a
+  published, active local agent with declared tools reaches the primary query's result for want of
+  a column its platform does not populate. Its own posture, including whether it acts without
+  prompting the user for approval, sits in `RawAgentInfo`, which this file does not read.
+
+  > **Correction, 2026-09-27.** An earlier version of this bullet said agents outside Microsoft
+  > Agent 365 management are outside this detection. Local AI agents that Defender for Endpoint
+  > discovers are reported in this table. `CHANGELOG.md` is the record.
 - **What the system prompt says.** `Instructions` is deliberately **not projected** by the primary
   query. Agent system prompts can carry organisation-specific content, and pulling them into a
   scheduled rule's results puts that content into alert storage. Read it on demand, per agent,
