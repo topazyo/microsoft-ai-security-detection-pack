@@ -384,10 +384,12 @@ Stated plainly, because the gap is the reason the release gate exists.
   **This pack does not identify any environment it ran against.** **No detection
   was observed firing**, so every query remains a schema-verified construction rather than an
   observed result.
-- **The KQL has been run against an engine on 2026-08-24, 2026-08-26 and 2026-09-11.** **Each
+- **The KQL has been run against an engine in checklist runs on 2026-08-24, 2026-08-26 and
+  2026-09-11.** **Each
   shipped query was submitted on the surface its own file names as its deployment target**, rather
   than on both, and **submitted is not the same as ran**. **Two schema failures are on the record
   and they are not on the same footing**: one table did not resolve on any run this pack records,
+  nor in a schema query on 2026-09-27 that was not a checklist run,
   while one column failed on the first run only and its three deployment queries parsed and ran on
   a later one. Each detection file records what its own queries did, because that record is what
   its own hedges rest on.

@@ -34,10 +34,13 @@ README and that section ever disagree, that section governs.
 
 AI-security detection content has a specific failure mode: plausible schema. A column name like
 `AbnormalCopilotBehavior` reads exactly like real Defender schema. **Invent the
-column outright and the query fails loudly**: Microsoft classes a reference to a nonexistent column
-as a syntax error, so the query never runs
+column outright and the query fails loudly**: it stops with an error and never runs. Microsoft's
+errors page gives a reference to a nonexistent column as a cause of syntax errors
 ([advanced hunting errors](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors),
-read 2026-09-21). **The silent case is the expensive one** - a real column filtered on a guessed
+read 2026-09-21, re-read 2026-09-27), while the message one tenant's engine returned for an
+unresolved table on
+2026-09-27 asked to "Fix semantic errors in your query"; the class is contested and the outcome is
+not. **The silent case is the expensive one** - a real column filtered on a guessed
 value, or a placeholder left in place, returns zero rows and reads as a clean environment. The
 reader has then lost time and learned nothing, and that is the case this pack is built against.
 [`SECURITY.md`](SECURITY.md) ranks that class first for the same reason.

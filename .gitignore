@@ -65,6 +65,7 @@ temp/
 # part of this pack. The rule is carried here so that a copy of this repository has one of its own
 # rather than depending on configuration it cannot see.
 .omc/
+.claude/worktrees/
 
 # Editor and OS artefacts.
 .DS_Store

@@ -74,8 +74,8 @@ stamp 2026-06-03). Page title: **`AgentsInfo (Preview)`**.
 > agents uses `Name` in its advanced-hunting queries against this table (`ms.date` 2026-09-16), both
 > read 2026-09-27. Microsoft's own sources conflict on this file's deployment target, which is what
 > that label means in the canonical legend. The queries keep `AgentName`, so a wrong name fails
-> loudly as a syntax error rather than returning an empty column, and `column_ifexists()` is
-> deliberately not used for that reason. Verification step 1 settles it.
+> loudly, stopping the query with an error rather than returning an empty column, and
+> `column_ifexists()` is deliberately not used for that reason. Verification step 1 settles it.
 
 > **`isempty()` alone would have made this detection fail silently, in the direction that matters.**
 > **The `isempty()` reference settles this outright, in its own example table on the page this file
@@ -105,7 +105,11 @@ stamp 2026-06-03). Page title: **`AgentsInfo (Preview)`**.
 > for this table in exactly those terms. **Every query block in this file names Microsoft Defender
 > XDR advanced hunting as its deployment target and was submitted there, and none of them parsed
 > against the table**, because the table was not there to parse against. **Submitted is not the
-> same as ran, and this file has only the first.**
+> same as ran, and this file has only the first.** A schema query on 2026-09-27, which was not a
+> checklist run, found the same in one tenant: a `getschema` query over `AgentsInfo` failed to
+> resolve the table, while a `print` control in the same session succeeded. It was submitted through
+> Microsoft Graph's `runHuntingQuery` method, which Microsoft documents as "for advanced hunting in
+> Microsoft 365 Defender", read 2026-09-27.
 > [MSD-003](MSD-003-agents-with-mcp-servers.md) records the same outcome for the same table, and
 > that file's `hash_sha256()` note is the one place a run on this target reached past it.
 > **So every statement here about what these queries return is a schema-verified construction
@@ -465,7 +469,8 @@ not a more accurate one.
 - [AgentsInfo table in the advanced hunting schema (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-agentsinfo-table) - last verified 2026-08-15, re-read 2026-09-27 for the `AgentName` row, which is unchanged, at an unchanged rendered date of 2026-06-03
 - [Azure Monitor Logs reference - AgentsInfo (Microsoft Learn)](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/agentsinfo) - read 2026-09-27, `ms.date` 2026-07-31, for the `Name` row the Requires further validation note sets against this file's schema table
 - [Discover local AI agents with Microsoft Defender for Endpoint (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-endpoint/discover-local-ai-agents) - read 2026-09-27, `ms.date` 2026-09-16, for its advanced-hunting queries on `AgentsInfo`, which use `Name` and read `name`, `type` and `endpoint` from `DeclaredTools` and `McpServers`, for the sentences on which columns carry local AI agent data, and for its sentence on when the table adds a record
-- [Handle advanced hunting errors (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors) - read 2026-09-27, `ms.date` 2026-05-18, for the syntax-error row, whose cause includes "references to nonexistent operators, columns, functions, or tables"
+- [Handle advanced hunting errors (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/advanced-hunting-errors) - read 2026-09-27, `ms.date` 2026-05-18, for the syntax-error row, whose cause includes "references to nonexistent operators, columns, functions, or tables", and for the semantic-error row, whose cause describes valid names and whose example is `'project' operator: Failed to resolve scalar expression named 'x'`
+- [`security: runHuntingQuery` (Microsoft Graph reference, Microsoft Learn)](https://learn.microsoft.com/en-us/graph/api/security-security-runhuntingquery) - read 2026-09-27, `ms.date` 2026-07-02, for the method being "for advanced hunting in Microsoft 365 Defender", which is the surface the 2026-09-27 schema query noted above was submitted to
 - [Detect and investigate threats to AI agents using Microsoft Defender (Preview) (Microsoft Learn)](https://learn.microsoft.com/en-us/defender-xdr/security-for-ai/ai-agent-detection-protection) - last verified 2026-08-15
 - [`isempty()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/isempty-function) - last verified 2026-08-15, for the empty-`dynamic` behaviour the predicates work around, and re-read 2026-08-19 for the published example table quoted above. **Each date is kept rather than collapsed**, because each later read is what added the material recorded against it
 - [`tostring()` (Kusto Query Language reference, Microsoft Learn)](https://learn.microsoft.com/en-us/kusto/query/tostring-function) - last verified 2026-08-16, for the coercion step and for the null case the `""` entry covers
