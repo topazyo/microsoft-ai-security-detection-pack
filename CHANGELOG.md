@@ -223,6 +223,14 @@ The date on this entry moves when the release gate is met, and no run has met it
   documentation since 2026-09-19; none of those is among the four. The note now says four were
   checked and that pages from other repositories are not covered by it. No licence file was read
   for this change.
+- **2026-09-27 - The methodology states the failure its "never indexed into" handling guards
+  against.** On this pack's reading, reading a key that a `dynamic` value does not carry returns
+  null rather than an error. Section 3.3 now says so, records that no Kusto reference page read on
+  2026-09-27 states it and that no run of this pack has tested it, and names `bag_has_key()` for
+  where a key's absence
+  matters, noting that its reference settles nothing about availability in Defender XDR advanced
+  hunting.
+
 ### Verification dates in this version
 
 - **2026-08-15** for the first source pass: every table reference, every status page, the MITRE

@@ -281,6 +281,19 @@ predicate, or a projected-but-never-filtered column - never by a guess.
 element-and-handling, so a row covering two columns is one row here and two elements there. Three
 rows do that, which is why the row count and any element count differ.
 
+The "never indexed into" handling guards against a failure no Kusto reference page this pack read
+states. On this pack's reading, reading a key that a `dynamic` value does not carry returns null
+rather than an error, so a guessed key path yields empty values instead of a failed query. The
+[dynamic data type page](https://learn.microsoft.com/en-us/kusto/query/scalar-data-types/dynamic),
+read 2026-09-27, says only that "Accessing a sub-object of a `dynamic` value yields another
+`dynamic` value", no other page read that day says what a missing key yields, and none of this
+pack's runs has tested it, so it is recorded as this pack's reading rather than as documented or
+observed. Where a key's absence has to be told apart from a null value,
+[`bag_has_key()`](https://learn.microsoft.com/en-us/kusto/query/bag-has-key-function) returns "True
+or false depending on if the key exists in the bag", read 2026-09-27; its "Applies to" line names
+the same four products every Kusto reference page names, which says nothing about whether it runs in
+Defender XDR advanced hunting.
+
 **How the per-file Provisional counts in the detection headers are derived**, because they are
 counted on a different unit again and will not add up to the row count above. A header count is the
 number of distinct **elements** that file marks Provisional - one per column, value set or
