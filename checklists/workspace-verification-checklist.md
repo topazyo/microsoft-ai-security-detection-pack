@@ -456,6 +456,19 @@ amount of further page reading settles any of this; only the test does.
 - [ ] For MSD-002 specifically, confirm `NetworkMessageId` and `RecipientEmailAddress` survive any
       edit you make to the projection. Microsoft states both must be present in the query results to
       apply actions to email messages, so removing either takes the response actions off the rule.
+- [ ] Send Microsoft's example message to a lab mailbox and confirm MSD-001 returns it. This is the
+      positive control for MSD-001. The Defender for Office 365 prompt injection guide publishes an
+      HTML message under "Example of a message expected to be detected" and states that "It's
+      expected to trigger prompt injection protection and be handled according to the configured
+      High confidence phishing action". The same page warns that "a basic prompt injection created
+      for testing might not trigger a detection when it's sent from a known sender or doesn't contain
+      enough supporting signals", so send that example rather than your own, from a sender outside
+      the lab tenant with no mail history with it. The page names no delivery location, so the same
+      message is a positive control for MSD-002 only where that action leaves it in a location
+      MSD-002's `DeliveryLocation` filter matches and its `EmailDirection` reads `Inbound`. Record
+      the action before reading an empty MSD-002 result as a failure.
+      Source: [Prompt injection protection in Microsoft Defender for Office 365](https://learn.microsoft.com/en-us/defender-office-365/step-by-step-guides/prompt-injection-protection-defender-for-office-365),
+      `ms.date` 2026-09-02, read 2026-09-29.
 
 ---
 

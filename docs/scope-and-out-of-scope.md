@@ -22,7 +22,7 @@ schema for the audience this pack is for.
 
 ## Out of scope for v0.1
 
-Each of these was considered and excluded on purpose, except the last, which records a gap found
+Each of these was considered and excluded on purpose, except the last two, which record gaps found
 after this scope was set. None is an oversight.
 
 ### Microsoft 365 Copilot chat-prompt hunting
@@ -199,6 +199,23 @@ uses, and that "Local MCP servers are reported only in `AgentsInfo`"
 ([Discover local AI agents with Microsoft Defender for Endpoint](https://learn.microsoft.com/en-us/defender-endpoint/discover-local-ai-agents),
 `ms.date` 2026-09-16, read 2026-09-27). MSD-003 and MSD-004 do not read `RawAgentInfo`, so no
 detection here covers that posture.
+
+### Foundry runtime traces
+
+Recorded on 2026-09-29, so it is also a gap found after this scope was set. Microsoft states that
+"Microsoft Foundry traces can capture sensitive information such as prompts, model responses,
+system instructions, and tool calls", lists access to "the Application Insights resource connected
+to your project" among the prerequisites for protecting them, and names September 30, 2026 as the
+migration date for routing that content to a dedicated table, with a temporary opt-out that is
+discontinued on September 30, 2027
+([Restrict access to sensitive content in Microsoft Foundry traces](https://learn.microsoft.com/en-us/azure/foundry/observability/how-to/traces-sensitive-content),
+`ms.date` 2026-07-21, read 2026-09-29). That table is `AppGenAIContent`: "Generative AI content
+captured from an OpenTelemetry source, including input and output messages, system instructions,
+and tool interactions"
+([Azure Monitor Logs reference - AppGenAIContent](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/appgenaicontent),
+`ms.date` 2026-07-27, read 2026-09-29). No detection here reads Application Insights telemetry or
+`AppGenAIContent`. MSD-005 reads Defender for Cloud alerts and MSD-008 reads protection behaviours,
+and neither is a trace of what a Foundry agent was asked or did.
 
 ---
 
