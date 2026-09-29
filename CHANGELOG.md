@@ -563,6 +563,75 @@ The date on this entry moves when the release gate is met, and no run has met it
     no page for `DataExfiltrationDetected` or `AbnormalCopilotBehavior` and one, the Purview page,
     for `XPIADetected`, which is the control. And no page it returned for `CopilotInteraction` and
     `CloudAppEvents` carries both terms.
+- **2026-09-29 for the monthly re-read that section 7 of the methodology sets, of every Microsoft
+  Learn URL this version cites.** Each was read live on this date. In the list below a page date is
+  the rendered "Last updated on" date, with `ms.date` in parentheses where the two differ.
+  - **What each read checked:** every quotation this pack attributes to the page, against the
+    page's text; every schema-table row, against the table reference it reproduces; and the
+    status-bearing figures. Those figures all reproduce: the two section 3.1 counts; the section 3.2
+    search and the Release state row MSD-005 rests on; MSD-005's seventeen alert identifiers, names
+    and severities, two of them `(Preview)`; the preview titles and sentences on the `AgentsInfo`,
+    `BehaviorInfo` and `BehaviorEntities` references and the AI agent detection page; the absence
+    of any preview qualifier on the pages MSD-001, MSD-002 and MSD-006 rest on; and the "Applies to"
+    lines of `hash_sha256()` and `column_ifexists()`, which still name four products and not
+    Defender XDR.
+  - **The conflict MSD-007's status rests on still stands.** The Sentinel data-connectors page still
+    carries its blanket preview notice, the literal `(Preview)` still occurs six times, five in an
+    entry title and one in a setup step, and the Microsoft Copilot entry carries no tag and no
+    release-state sentence.
+  - **What did not change:** no quotation and no schema row was found changed, no status label
+    moved, and no query changed. None of these reads moves a citation date, per the rule stated
+    under 2026-08-18. Section 7's table also says to update last-verified dates; this entry takes
+    the place of that step, so a Sources date older than the monthly window is to be read with the
+    2026-09-29 read recorded here for every page it cites.
+  - **The Kusto references now open on a product view.** Each cited Kusto URL redirects to the same
+    page with `?view=microsoft-fabric`, which is the view these reads checked. The `auditLogQuery`
+    and `runHuntingQuery` Graph URLs redirect to `?view=graph-rest-1.0`, and the `signIn` URL
+    already carries that view.
+  - **Pages as read.** Defender XDR: the `AgentsInfo` reference 2026-06-03, `BehaviorInfo` and
+    `BehaviorEntities` 2026-01-12, `CloudAppEvents` 2025-05-15, `EmailEvents` 2026-09-02
+    (2026-08-03), the errors page 2026-05-18, advanced hunting with Sentinel data 2026-09-23
+    (2026-06-09), the overview 2026-08-07, the schema tables list 2026-07-27, custom detection rules
+    2026-09-02, the AI agent detection page 2026-09-03 (2026-08-07) and the real-time protection
+    page 2026-09-10 (2026-07-01). Defender for Office 365: the prompt injection guide 2026-09-08
+    (2026-09-02) and the email-entity detection-technology page 2026-07-14 (2026-07-07). Defender
+    for Endpoint: the local AI agents page 2026-09-16. Defender for Cloud: AI threat protection
+    2026-06-17 (2026-05-19), the AI alerts page 2026-07-06, the release notes 2026-08-18 (2026-07-05)
+    and the release-notes archive 2026-06-17 (2026-06-03). Microsoft Sentinel: creating incidents
+    from alerts 2026-07-02 and the data-connectors reference 2026-06-28 (2026-02-05). Azure Monitor:
+    the `AADServicePrincipalSignInLogs` reference 2026-08-28 (2026-08-27), `AgentsInfo` 2026-07-31,
+    `CopilotActivity` 2026-07-28 (2026-07-27), `SecurityAlert` 2026-07-28 (2026-07-27),
+    `SigninLogs` 2026-08-27 and the `CopilotActivity` example queries 2026-02-10 (2026-02-09).
+    Microsoft Entra: Conditional Access for agents 2026-06-19, users, groups, agents and workload
+    identities 2026-03-24, targeting agent identities 2026-06-11 (2026-06-02) and workload
+    identities 2026-03-24. Microsoft Graph: `auditLogQuery` 2026-08-14 (2026-06-17), `signIn`
+    2025-11-28 and `runHuntingQuery` 2026-08-18 (2026-07-02). Purview: Copilot audit logs
+    2026-08-26. Agent 365: observability concepts 2026-09-02. Kusto: `arg_max()` 2025-05-27
+    (2025-01-15), `array_length()` 2024-08-20 (2024-08-11), `bag_has_key()` 2025-05-22 (2024-08-11),
+    `case()` 2025-05-25 (2024-08-11), `column_ifexists()` 2025-05-25 (2025-01-09), string operators
+    2025-03-10 (2024-08-11), `==` 2025-05-25 (2024-08-11), `getschema` 2025-05-27 (2024-08-11),
+    `hash_sha256()` 2024-08-20 (2024-08-11), `in` 2024-11-28 (2024-11-27), `in~` 2024-11-21
+    (2024-08-11), `isempty()` 2024-08-20 (2024-08-11), `!=` 2024-08-20 (2024-08-11), `!in~`
+    2024-08-12 (2024-08-11), `print` 2025-06-04, the `dynamic` data type 2024-08-12 (2024-08-11),
+    `tostring()` 2025-03-10 (2025-03-09) and `union` 2024-08-20 (2024-08-11).
+  - **Pages new to the pack.** The Kusto
+    [`leftanti` join](https://learn.microsoft.com/en-us/kusto/query/join-leftanti) reference,
+    2025-01-29 (2025-01-21), now in the Sources of MSD-003, MSD-006 and MSD-007, which ship
+    `join kind=leftanti` legs, and of MSD-004, whose prose argues from the join's semantics. That
+    closes the citation the 2026-09-20 entry recorded as owed. The checklist's sentence on the join
+    describes MSD-003's leg and carries no citation of its own. And two pages the scope document's
+    new Foundry runtime traces section cites, which records a coverage gap: the Foundry page on
+    sensitive content in traces, 2026-07-22 (2026-07-21), and the `AppGenAIContent` reference,
+    2026-07-28 (2026-07-27). The scope document's lead now says its last two entries, not its last
+    one, are gaps found after the scope was set.
+  - **A new reason on a page already cited:** the prompt injection guide, for the example message
+    and the testing caveat that a new positive-control step at the end of checklist Group 2 quotes,
+    and for MSD-001's page stamp, which the 2026-09-20 entry recorded as not re-derivable. MSD-001
+    now says that the 2026-08-06 figure's field was not recorded, and gives both fields as read on
+    this date rather than restating the old figure as either; its Sources entry for the guide
+    carries the read as a dated clause and keeps its last-verified date. The checklist step is the
+    positive control for MSD-001, and for MSD-002 only where the configured action leaves the
+    message in a location and direction MSD-002's filters match.
 
 ### Workspace verification
 
